@@ -3,7 +3,7 @@ using ProblemSolver.Shared.Tasks;
 
 namespace ProblemSolver.Shared.Bot.Dtos.Requests;
 
-public class CodeRequest
+public class TaskRequest
 {
     public required TaskModel Task { get; set; }
     public required ProgrammingLanguageEnum Language { get; set; }
