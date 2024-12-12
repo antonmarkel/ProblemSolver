@@ -28,6 +28,7 @@ public partial class App : Application
                     services
                         .AddLogging()
                         .AddBotServices()
+                        .AddDlServices()
                         .AddTransient<MainWindow>();
                 })
                 .Build();

@@ -8,6 +8,10 @@
         Title="MainWindow" Height="450" Width="800">
     <StackPanel Orientation="Vertical">
         <Button Click="ButtonBase_OnClick">Test</Button>
-        <TextBox x:Name="InfoTextBlock">Here should be some text</TextBox>
+        <ScrollViewer>
+            <StackPanel>
+                <TextBox x:Name="InfoTextBlock">Here should be some text</TextBox>
+            </StackPanel>
+        </ScrollViewer>
     </StackPanel>
 </Window>

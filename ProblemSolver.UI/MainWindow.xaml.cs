@@ -1,9 +1,12 @@
-﻿using System.Windows;
+﻿using System.Net.Http;
+using System.Text.Json;
+using System.Windows;
+using OneOf;
+using OneOf.Types;
 using ProblemSolver.Logic.BotServices.Interfaces;
-using ProblemSolver.Shared.Bot.Dtos.Requests;
-using ProblemSolver.Shared.Bot.Enums;
-using ProblemSolver.Shared.Tasks;
-using ProblemSolver.Shared.Tasks.Examples;
+using ProblemSolver.Logic.DlServices.Interfaces;
+using ProblemSolver.Logic.Results;
+using ProblemSolver.UI.DL.Auth;
 
 namespace ProblemSolver.UI
 {
@@ -13,50 +16,46 @@ namespace ProblemSolver.UI
     public partial class MainWindow : Window
     {
         private readonly IBotService _botService;
+        private readonly IAuthService _authService;
+        private readonly ITaskExtractor _taskExtractor;
 
-        public MainWindow(IBotService botService)
+        public MainWindow(IBotService botService, IAuthService authService, ITaskExtractor taskExtractor)
         {
             _botService = botService;
+            _authService = authService;
+            _taskExtractor = taskExtractor;
             InitializeComponent();
         }
 
         private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            var request = new TaskRequest
+            using var client = new HttpClient
             {
-                Language = ProgrammingLanguageEnum.Cpp,
-                Task = new TaskModel
-                {
-                    Config = new TaskConfig
-                    {
-                        InputFile = "br1.in",
-                        OutputFile = "br1.out",
-                        TimeLimit = 2,
-                        MemoryLimit = 64
-                    },
-                    FormatExamples =
-                    [
-                        new FormatExample
-                        {
-                            Input = "Одно целое число X",
-                            Output =
-                                "Сумма всех делителей числа X"
-                        }
-                    ],
-                    SolutionExamples =
-                    [
-                        new SolutionExample
-                        {
-                            InputExample = "12", OutputExample = """28"""
-                        }
-                    ],
-                    TaskText =
-                        "Посчитать сумму всех делителей заданного числа X (1 <= I <= 1,000,000). Например, для числа 12 делители - 1, 2, 3, 4, 6, 12. Суммируя их, получаем 28"
-                }
+                BaseAddress = new Uri("https://dl.gsu.by/")
+            };
+            var loginRequest = new LoginRequest
+            {
+                Id = 178538,
+                Password = "Markelov2005*15"
             };
 
-            var response = await _botService.ProcessRequestAsync(request);
-            InfoTextBlock.Text = $"{response.Code}\n{response.ProgrammingProgrammingLanguage}";
+            OneOf<Success, WrongCredentials> loginResult = await _authService.LoginAsync(loginRequest, client);
+            if (loginResult.IsT1)
+            {
+                InfoTextBlock.Text = "failed to log in";
+
+                return;
+            }
+
+            OneOf<List<string>, Failed> extractResult = await _taskExtractor.ExtractAsync(720, client);
+            if (extractResult.IsT1)
+            {
+                InfoTextBlock.Text = "failed to get tasks";
+
+                return;
+            }
+
+            InfoTextBlock.Text = JsonSerializer.Serialize(extractResult.AsT0);
         }
     }
 }
