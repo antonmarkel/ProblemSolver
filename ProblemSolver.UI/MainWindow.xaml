@@ -39,7 +39,22 @@
                       VerticalAlignment="Center"/>
         </StackPanel>
 
-            <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
+        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+
+            <Label VerticalAlignment="Center" Margin="5">Choose AI</Label>
+            <ComboBox Width="110" Height="30" Margin="5" VerticalContentAlignment="Center"
+              ItemsSource="{Binding Bots}"
+              SelectedItem="{Binding SelectedBot}"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <Button x:Name="SolveButton" Grid.Column="3" Grid.Row="0" Margin="5" Height="30" Width="100" VerticalAlignment="Center" Command="{Binding SolveCommand}">
+            Solve
+        </Button>
+
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
             <StackPanel>
                 <TextBlock Text="Content goes here..." Margin="10"/>
                 <TextBlock Text="More content..." Margin="10"/>
