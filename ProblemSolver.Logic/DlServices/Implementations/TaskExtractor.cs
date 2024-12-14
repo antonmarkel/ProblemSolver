@@ -2,12 +2,13 @@
 using OneOf;
 using ProblemSolver.Logic.DlServices.Interfaces;
 using ProblemSolver.Logic.Results;
+using ProblemSolver.Shared.Tasks;
 
 namespace ProblemSolver.Logic.DlServices.Implementations
 {
     public class TaskExtractor : ITaskExtractor
     {
-        public async Task<OneOf<List<string>, Failed>> ExtractAsync(long courseId, HttpClient client)
+        public async Task<OneOf<List<TaskLink>, Failed>> ExtractAsync(long courseId, HttpClient client)
         {
             var treeTaskResponse = await client.GetAsync($"tasktree.jsp?cid={courseId}");
             string content = await treeTaskResponse.Content.ReadAsStringAsync();
@@ -15,10 +16,14 @@ namespace ProblemSolver.Logic.DlServices.Implementations
             var regex = new Regex(@"task\.jsp\?nid=(\d+)&cid=(\d+)");
             var matches = regex.Matches(content);
 
-            List<string> urls = new(matches.Count);
+            List<TaskLink> urls = new(matches.Count);
 
             foreach (Match match in matches)
-                urls.Add(match.Value);
+            {
+                long nid = long.Parse(match.Groups[1].Value);
+                long cid = long.Parse(match.Groups[2].Value);
+                urls.Add(new TaskLink { Id = nid, Url = $"taskview.jsp?nid={nid}&cid={cid}&showcfg=1" });
+            }
 
             if (urls.Count == 0)
                 return new Failed();

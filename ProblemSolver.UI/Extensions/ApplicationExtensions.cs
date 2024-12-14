@@ -20,7 +20,9 @@ namespace ProblemSolver.UI.Extensions
         public static IServiceCollection AddDlServices(this IServiceCollection services)
         {
             return services.AddScoped<IAuthService, AuthService>()
-                .AddScoped<ITaskExtractor, TaskExtractor>();
+                .AddScoped<ITaskExtractor, TaskExtractor>()
+                .AddScoped<ITaskTextProcessor, TaskTextProcessor>()
+                .AddTransient<ITaskSender, TaskSender>();
         }
     }
 }

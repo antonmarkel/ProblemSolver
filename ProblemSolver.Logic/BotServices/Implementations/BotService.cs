@@ -40,9 +40,8 @@ namespace ProblemSolver.Logic.BotServices.Implementations
                 };
 
                 string jsonMessage = JsonSerializer.Serialize(message);
-                Console.WriteLine(jsonMessage);
                 await SendMessageAsync(webSocket, jsonMessage);
-
+                Console.WriteLine(message.message);
                 response = await ReceiveMessageAsync(webSocket);
 
                 if (webSocket.State == WebSocketState.Open)
@@ -68,8 +67,12 @@ namespace ProblemSolver.Logic.BotServices.Implementations
 
             if (response == string.Empty)
                 return new TaskResponse(request.Language, "Failed");
-            Console.WriteLine(response);
+            //Console.WriteLine(Regex.Unescape(response));
             string code = _codeExtractor.ExtractCode(response);
+
+            //TODO: Refactor this shit
+            if (code == "Failed to extract code!")
+                return new TaskResponse(request.Language, "Failed");
 
             return new TaskResponse(request.Language, code);
         }

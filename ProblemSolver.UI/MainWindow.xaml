@@ -6,12 +6,10 @@
         xmlns:local="clr-namespace:ProblemSolver.UI"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <StackPanel Orientation="Vertical">
+    <ScrollViewer>
+        <StackPanel Orientation="Vertical">
         <Button Click="ButtonBase_OnClick">Test</Button>
-        <ScrollViewer>
-            <StackPanel>
-                <TextBox x:Name="InfoTextBlock">Here should be some text</TextBox>
-            </StackPanel>
-        </ScrollViewer>
+        <TextBox x:Name="InfoTextBlock">Here should be some text</TextBox>
     </StackPanel>
+    </ScrollViewer>
 </Window>
