@@ -101,10 +101,10 @@ namespace ProblemSolver.UI
                         }
 
                         string taskPath = Path.Combine(coursePath, $"info{request.Task.TaskId}.txt");
-                        infoToSave.Push(new ValueTuple<string, string>(codeResponse.Code, taskPath));
+                        infoToSave.Push(new ValueTuple<string, string>(request.Task.Info!, taskPath));
 
                         string filePath = Path.Combine(coursePath, $"t{request.Task.TaskId}.cpp");
-                        codeToSave.Push(new ValueTuple<string, string>(request.Task.Info!, filePath));
+                        codeToSave.Push(new ValueTuple<string, string>(codeResponse.Code, filePath));
 
                         toSend.Add(new ValueTuple<string, long, long>(filePath, courseId, request.Task.TaskId));
                     });

@@ -13,6 +13,7 @@ public class StandardConverter : ITaskRequestConverter
         messageBuilder.AppendLine(
             $"Here will be task web page. You must extract task from there, there could be some input/output configuration you'll have to follow: {request.Task.Info}");
         messageBuilder.AppendLine($"Solve using: {request.Language}");
+        messageBuilder.AppendLine("Send only code.");
         //messageBuilder.AppendLine(
         //   "Делай вывод по примеру,ничего лишнего выводить не надо. Если сказано сделать вывод в файл,так и сделай.");
 
