@@ -6,10 +6,62 @@
         xmlns:local="clr-namespace:ProblemSolver.UI"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <ScrollViewer>
-        <StackPanel Orientation="Vertical">
-        <Button Click="ButtonBase_OnClick">Test</Button>
-        <TextBox x:Name="InfoTextBlock">Here should be some text</TextBox>
-    </StackPanel>
-    </ScrollViewer>
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+            <Label VerticalAlignment="Center" Margin="5">Enter your course id</Label>
+            <TextBox x:Name="CourseInputBox" Width="55" Height="20" VerticalAlignment="Center" Margin="5"
+                     Text="{Binding Id, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+
+            <Label VerticalAlignment="Center" Margin="5">Choose language</Label>
+            <ComboBox Width="75" Height="30" Margin="5" VerticalContentAlignment="Center"
+                      ItemsSource="{Binding Languages}"
+                      SelectedItem="{Binding SelectedLanguage}"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"/>
+        </StackPanel>
+
+            <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
+            <StackPanel>
+                <TextBlock Text="Content goes here..." Margin="10"/>
+                <TextBlock Text="More content..." Margin="10"/>
+                <TextBlock Text="Even more content..." Margin="10"/>
+                <TextBlock Text="Content goes here..." Margin="10"/>
+                <TextBlock Text="More content..." Margin="10"/>
+                <TextBlock Text="Even more content..." Margin="10"/>
+                <TextBlock Text="Content goes here..." Margin="10"/>
+                <TextBlock Text="More content..." Margin="10"/>
+                <TextBlock Text="Even more content..." Margin="10"/>
+                <TextBlock Text="Content goes here..." Margin="10"/>
+                <TextBlock Text="More content..." Margin="10"/>
+                <TextBlock Text="Even more content..." Margin="10"/>
+                <TextBlock Text="Content goes here..." Margin="10"/>
+                <TextBlock Text="More content..." Margin="10"/>
+                <TextBlock Text="Even more content..." Margin="10"/>
+                <TextBlock Text="Content goes here..." Margin="10"/>
+                <TextBlock Text="More content..." Margin="10"/>
+                <TextBlock Text="Even more content..." Margin="10"/>
+            </StackPanel>
+        </ScrollViewer>
+        
+    </Grid>
+
 </Window>
