@@ -1,0 +1,36 @@
+﻿<Window x:Class="ProblemSolver.UI.ConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProblemSolver.UI"
+        mc:Ignorable="d"
+        Title="ConfigWindow" Height="470" Width="800">
+    <Grid>
+        <StackPanel Margin="10">
+            <Label Content="Neural Network Model:"/>
+            <TextBox Text="{Binding Config.NeuralNetworkModel, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label Content="Language:"/>
+            <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Config.Language}"/>
+            <Label Content="Task ID:"/>
+            <TextBox Text="{Binding Config.TaskId, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label Content="Tasks:"/>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Height="200">
+                <ListView ItemsSource="{Binding Config.Tasks}" Margin="0">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
+                            <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}"/>
+                            <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}"/>
+                            <GridViewColumn Header="Code" DisplayMemberBinding="{Binding Code}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </ScrollViewer>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>
+                <Button Content="Cancel" Command="{Binding CancelCommand}" Margin="5"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

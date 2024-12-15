@@ -1,14 +1,12 @@
 ﻿using System.Windows;
 
-
 namespace ProblemSolver.UI
 {
-    public partial class MainWindow : Window
+    public partial class ConfigWindow : Window
     {
-        public MainWindow()
+        public ConfigWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
         }
     }
 }

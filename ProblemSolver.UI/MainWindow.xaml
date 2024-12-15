@@ -6,80 +6,32 @@
         xmlns:local="clr-namespace:ProblemSolver.UI"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-
     <Grid>
-
-        <Grid.ColumnDefinitions>
-            
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            
-        </Grid.ColumnDefinitions>
-        
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
-            <Label VerticalAlignment="Center" Margin="5">Enter your course id</Label>
-            <TextBox x:Name="CourseInputBox" Width="55" Height="20" VerticalAlignment="Center" Margin="5"
-                     Text="{Binding CourseId, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-        </StackPanel>
-
-        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
-
-            <Label VerticalAlignment="Center" Margin="5">Choose language</Label>
-            <ComboBox Width="75" Height="30" Margin="5" VerticalContentAlignment="Center"
-                      ItemsSource="{Binding Languages}"
-                      SelectedItem="{Binding SelectedLanguage}"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Center"/>
-        </StackPanel>
-
-        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
-
-            <Label VerticalAlignment="Center" Margin="5">Choose AI</Label>
-            <ComboBox Width="110" Height="30" Margin="5" VerticalContentAlignment="Center"
-              ItemsSource="{Binding BotsModels}"
-              SelectedItem="{Binding SelectedBotModel}"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Center"/>
-        </StackPanel>
-
-        <Button x:Name="SolveButton" Grid.Column="3" Grid.Row="0" Margin="5" Height="30" Width="100" VerticalAlignment="Center" Command="{Binding SolveCommand}">
-            Solve
-        </Button>
-
-
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
-            <StackPanel>
-
-                <ListBox ItemsSource="{Binding Problems}" SelectedItem="{Binding SelectedProblem}" SelectionChanged="ListView_SelectionChanged" SelectionMode="Single">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Expander Header="{Binding Name}" Margin="5">
-                                <StackPanel>
-                                    <TextBox Text="{Binding Name, StringFormat='Name: {0}'}" IsReadOnly="True"/>
-                                    <WebBrowser x:Name="DescriptionBrowser" Margin="0" Width="300" Height="200"/>
-                                    <TextBlock Text="Solution:"/>
-                                    <TextBox Text="{Binding Solution}" IsReadOnly="True"
-                                             FontFamily="Consolas"
-                                             FontSize="14"
-                                             TextWrapping="Wrap"
-                                             Foreground="Green"
-                                             Background="Black"/>
-                                </StackPanel>
-                            </Expander>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-
-            </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ListView ItemsSource="{Binding Configurations}" SelectedItem="{Binding SelectedConfig}" Margin="10">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Model" DisplayMemberBinding="{Binding NeuralNetworkModel}"/>
+                        <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Language}"/>
+                        <GridViewColumn Header="Task ID" DisplayMemberBinding="{Binding TaskId}"/>
+                        <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}"/>
+                        <GridViewColumn>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Start" Command="{Binding DataContext.StartConfigCommand,
+                                        RelativeSource={RelativeSource AncestorType=ListView}}" 
+                                            CommandParameter="{Binding}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
         </ScrollViewer>
-        
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
+            <Button Content="Add" Command="{Binding AddConfigCommand}" Margin="5"/>
+            <Button Content="Edit" Command="{Binding EditConfigCommand}" Margin="5"/>
+            <Button Content="Remove" Command="{Binding RemoveConfigCommand}" Margin="5"/>
+        </StackPanel>
     </Grid>
-
 </Window>
