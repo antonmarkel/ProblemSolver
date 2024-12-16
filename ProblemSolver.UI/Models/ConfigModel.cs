@@ -8,7 +8,7 @@ public class ConfigModel : INotifyPropertyChanged
     private string _neuralNetworkModel;
     private ProgrammingLanguageEnum _language;
     private int _taskId;
-    private string _status;
+    private string _status = "Pending";
     private ObservableCollection<TaskModel> _tasks = new();
 
     public string NeuralNetworkModel

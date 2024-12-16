@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.IO;
+using System.Windows;
 
 public class MainViewModel : INotifyPropertyChanged
 {
@@ -32,10 +33,10 @@ public class MainViewModel : INotifyPropertyChanged
     {
         Configurations = new ObservableCollection<ConfigModel>();
 
-        AddConfigCommand = new RelayCommand(AddConfig);
-        EditConfigCommand = new RelayCommand(EditConfig, () => SelectedConfig != null);
-        RemoveConfigCommand = new RelayCommand(RemoveConfig, () => SelectedConfig != null);
-        StartConfigCommand = new RelayCommand(StartConfig, () => SelectedConfig != null);
+        AddConfigCommand = new RelayCommand(_ => AddConfig());
+        EditConfigCommand = new RelayCommand(_ => EditConfig(), _ => SelectedConfig != null);
+        RemoveConfigCommand = new RelayCommand(_ => RemoveConfig(), _ => SelectedConfig != null);
+        StartConfigCommand = new RelayCommand(parameter => StartConfig(parameter));
     }
 
     private void AddConfig()
@@ -57,29 +58,46 @@ public class MainViewModel : INotifyPropertyChanged
         SaveConfigurations();
     }
 
-    private async void StartConfig()
+    private async void StartConfig(object parameter)
     {
-        SelectedConfig.Status = "In Progress";
+        if (parameter is ConfigModel config)
+        {
 
-        //var tasksFromBackend = await _backendService.GetTasksAsync(SelectedConfig.TaskId);
+            config.Status = "In Progress";
 
-        //SelectedConfig.Tasks.Clear();
+            //var tasksFromBackend = await _backendService.GetTasksAsync(SelectedConfig.TaskId);
 
-        //foreach (var task in tasksFromBackend)
-        //{
-        //    SelectedConfig.Tasks.Add(task);
-        //}
+            var tasksFromBackend = new List<TaskModel>
+            {
+                new TaskModel(){Code="code1", Description="desc1", Name="name1", Status="In progress" },
+                new TaskModel(){Code="code2", Description="desc2", Name="name2", Status="In progress" },
+                new TaskModel(){Code="code3", Description="desc3", Name="name3", Status="In progress" },
+                new TaskModel(){Code="code4", Description="desc4", Name="name4", Status="In progress" },
+                new TaskModel(){Code="code5", Description="desc5", Name="name5", Status="In progress" }
+            };
 
-        await Task.Delay(3000);
+            config.Tasks.Clear();
 
-        //foreach(var task in SelectedConfig.Tasks)
-        //{
-        //    var result = await _backendService.ProcessTaskAsync(task, SelectedConfig.Language);
-        //    task.Status = result.Status;
-        //    task.Code = result.Code;
-        //} 
+            foreach (var task in tasksFromBackend)
+            {
+                config.Tasks.Add(task);
+            }
 
-        SelectedConfig.Status = SelectedConfig.Tasks.All(t => t.Status == "Completed") ? "Completed" : "In Progress";
+            MessageBox.Show("Tasks added!");
+
+            await Task.Delay(5000);
+            
+
+            foreach (var task in config.Tasks)
+            {
+                //var result = await _backendService.ProcessTaskAsync(task, SelectedConfig.Language);
+                task.Status = "Completed";
+                task.Code = "Just a code";
+                await Task.Delay(1000);
+            }
+
+            UpdateConfigStatus(config);
+        }
     }
 
     private void OpenConfigWindow(ConfigModel config)
@@ -128,6 +146,8 @@ public class MainViewModel : INotifyPropertyChanged
         {
             config.Status = config.Tasks.All(task => task.Status == "Completed") ? "Completed" : "In Progress";
         }
+
+        OnPropertyChanged(nameof(Configurations));
     }
     private void CheckAllTasksStatus()
     {

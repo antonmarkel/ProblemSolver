@@ -14,13 +14,11 @@
                         <GridViewColumn Header="Model" DisplayMemberBinding="{Binding NeuralNetworkModel}"/>
                         <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Language}"/>
                         <GridViewColumn Header="Task ID" DisplayMemberBinding="{Binding TaskId}"/>
-                        <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}"/>
+                        <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <GridViewColumn>
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Start" Command="{Binding DataContext.StartConfigCommand,
-                                        RelativeSource={RelativeSource AncestorType=ListView}}" 
-                                            CommandParameter="{Binding}"/>
+                                    <Button Content="Start" Command="{Binding DataContext.StartConfigCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

@@ -1,8 +1,59 @@
-﻿public class TaskModel
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+public class TaskModel : INotifyPropertyChanged
 {
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    private string _name;
+    private string _description;
+    private string _status;
+    private string _code;
+
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            _name = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string Description
+    {
+        get => _description;
+        set
+        {
+            _description = value;
+            OnPropertyChanged();
+        }
+    }
+
     //TODO Create StatusEnum
-    public string Status { get; set; } = string.Empty;
-    public string Code { get; set; } = string.Empty;
+
+    public string Status
+    {
+        get => _status;
+        set
+        {
+            _status = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string Code
+    {
+        get => _code;
+        set
+        {
+            _code = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 }
+

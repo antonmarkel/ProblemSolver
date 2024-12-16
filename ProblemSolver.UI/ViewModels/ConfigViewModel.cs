@@ -28,8 +28,8 @@ public class ConfigViewModel : INotifyPropertyChanged
         Tasks = config.Tasks;
 
         Config = config;
-        SaveCommand = new RelayCommand(Save);
-        CancelCommand = new RelayCommand(Cancel);
+        SaveCommand = new RelayCommand(_ => Save());
+        CancelCommand = new RelayCommand(_ => Cancel());
     }
 
     private void Save()
