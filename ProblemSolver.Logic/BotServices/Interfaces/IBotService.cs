@@ -1,10 +1,11 @@
-﻿using ProblemSolver.Shared.Bot.Dtos.Requests;
-using ProblemSolver.Shared.Bot.Dtos.Responses;
+﻿using OneOf;
+using ProblemSolver.Logic.Results;
+using ProblemSolver.Shared.Bot.Dtos.Requests;
 
 namespace ProblemSolver.Logic.BotServices.Interfaces
 {
     public interface IBotService
     {
-        Task<TaskResponse> ProcessRequestAsync(TaskRequest request);
+        Task<OneOf<string, Failed>> ProcessRequestAsync(SolutionRequest request);
     }
 }

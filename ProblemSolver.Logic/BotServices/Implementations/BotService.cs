@@ -1,29 +1,25 @@
-﻿using System.Net.WebSockets;
-using System.Text;
-using System.Text.Json;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
+using OneOf;
 using ProblemSolver.Configuration.Bot;
 using ProblemSolver.Logic.BotServices.Interfaces;
+using ProblemSolver.Logic.Results;
 using ProblemSolver.Shared.Bot.Dtos.Requests;
-using ProblemSolver.Shared.Bot.Dtos.Responses;
-
+using System.Net.WebSockets;
+using System.Text;
+using System.Text.Json;
 namespace ProblemSolver.Logic.BotServices.Implementations
 {
     public class BotService : IBotService
     {
-        private readonly ITaskRequestConverter _converter;
-        private readonly BotConnectionConfig _connectionConfig;
-        private readonly ICodeExtractor _codeExtractor;
 
-        public BotService(ITaskRequestConverter converter, IOptions<BotConnectionConfig> connectionConfig,
-            ICodeExtractor codeExtractor)
+        private readonly BotConnectionConfig _connectionConfig;
+
+        public BotService(IOptions<BotConnectionConfig> connectionConfig)
         {
-            _converter = converter;
             _connectionConfig = connectionConfig.Value;
-            _codeExtractor = codeExtractor;
         }
 
-        public async Task<TaskResponse> ProcessRequestAsync(TaskRequest request)
+        public async Task<OneOf<string, Failed>> ProcessRequestAsync(SolutionRequest request)
         {
             string response = string.Empty;
             using var webSocket = new ClientWebSocket();
@@ -34,14 +30,14 @@ namespace ProblemSolver.Logic.BotServices.Implementations
                 await webSocket.ConnectAsync(connection, CancellationToken.None);
                 var message = new
                 {
-                    message = _converter.ConvertToMessage(request),
+                    message = request.Message,
                     value = request.UseBot.ToString(),
                     language = "English"
                 };
 
                 string jsonMessage = JsonSerializer.Serialize(message);
                 await SendMessageAsync(webSocket, jsonMessage);
-                Console.WriteLine(message.message);
+
                 response = await ReceiveMessageAsync(webSocket);
 
                 if (webSocket.State == WebSocketState.Open)
@@ -66,15 +62,9 @@ namespace ProblemSolver.Logic.BotServices.Implementations
             }
 
             if (response == string.Empty)
-                return new TaskResponse(request.Language, "Failed");
-            //Console.WriteLine(Regex.Unescape(response));
-            string code = _codeExtractor.ExtractCode(response);
+                return new Failed();
 
-            //TODO: Refactor this shit
-            if (code == "Failed to extract code!")
-                return new TaskResponse(request.Language, "Failed");
-
-            return new TaskResponse(request.Language, code);
+            return response;
         }
 
         private Uri CreateWebSocketUri()
@@ -120,7 +110,6 @@ namespace ProblemSolver.Logic.BotServices.Implementations
             }
             catch (OperationCanceledException)
             {
-                //TODO: switch to logger
                 Console.WriteLine("Receive operation timed out.");
             }
             catch (WebSocketException wse)
