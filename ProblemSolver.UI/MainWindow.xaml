@@ -5,24 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProblemSolver.UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        MinHeight="450"
+        MinWidth="800">
 
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <ListView ItemsSource="{Binding Configurations}" SelectedItem="{Binding SelectedConfig}" Margin="10">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Model" DisplayMemberBinding="{Binding NeuralNetworkModel}"/>
-                        <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Language}"/>
-                        <GridViewColumn Header="Task ID" DisplayMemberBinding="{Binding TaskId}"/>
-                        <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <GridViewColumn Header="Model" DisplayMemberBinding="{Binding NeuralNetworkModel}" Width="200"/>
+                        <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Language}" Width="150"/>
+                        <GridViewColumn Header="Task ID" DisplayMemberBinding="{Binding TaskId}" Width="150"/>
+                        <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
                         <GridViewColumn>
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Content="Start"
                                             Command="{Binding DataContext.StartConfigCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                             CommandParameter="{Binding}"
-                                            IsEnabled="{Binding CanStart}" />
+                                            IsEnabled="{Binding CanStart}"
+                                            Width="100"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

@@ -89,7 +89,7 @@ public class MainViewModel : INotifyPropertyChanged
                     config.Tasks.Add(task);
                 }
 
-                MessageBox.Show("Tasks added!");
+                Console.WriteLine($"Tasks added (taskID = {config.TaskId})");
 
                 await Task.Delay(5000);
 

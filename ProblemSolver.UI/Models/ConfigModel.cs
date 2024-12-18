@@ -5,14 +5,14 @@ using System.Runtime.CompilerServices;
 
 public class ConfigModel : INotifyPropertyChanged
 {
-    private string _neuralNetworkModel;
+    private BotEnum _neuralNetworkModel;
     private ProgrammingLanguageEnum _language;
     private int _taskId;
     private ConfigStatusEnum _status = ConfigStatusEnum.Pending;
     private bool _canStart = true;
     private ObservableCollection<TaskModel> _tasks = new();
 
-    public string NeuralNetworkModel
+    public BotEnum NeuralNetworkModel
     {
         get => _neuralNetworkModel;
         set

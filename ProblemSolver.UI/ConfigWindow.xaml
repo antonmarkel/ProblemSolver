@@ -5,11 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProblemSolver.UI"
         mc:Ignorable="d"
-        Title="ConfigWindow" Height="470" Width="800">
+        Title="ConfigWindow" Height="470" Width="800"
+        MinHeight="470"
+        MinWidth="800">
     <Grid>
         <StackPanel Margin="10">
             <Label Content="Neural Network Model:"/>
-            <TextBox Text="{Binding Config.NeuralNetworkModel, UpdateSourceTrigger=PropertyChanged}"/>
+            <ComboBox Text="{Binding Config.NeuralNetworkModel, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Language:"/>
             <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Config.Language}"/>
             <Label Content="Task ID:"/>
@@ -19,10 +21,9 @@
                 <ListView ItemsSource="{Binding Config.Tasks}" Margin="0">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
-                            <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}"/>
-                            <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}"/>
-                            <GridViewColumn Header="Code" DisplayMemberBinding="{Binding Code}"/>
+                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                            <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}" Width="300"/>
+                            <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}" Width="300"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
