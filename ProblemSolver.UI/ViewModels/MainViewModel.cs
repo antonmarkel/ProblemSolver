@@ -26,8 +26,8 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand AddConfigCommand { get; }
     public ICommand EditConfigCommand { get; }
     public ICommand RemoveConfigCommand { get; }
-
     public ICommand StartConfigCommand { get; }
+    public ICommand StartAllConfigCommand { get; }
 
     public MainViewModel()
     {
@@ -36,7 +36,8 @@ public class MainViewModel : INotifyPropertyChanged
         AddConfigCommand = new RelayCommand(_ => AddConfig());
         EditConfigCommand = new RelayCommand(_ => EditConfig(), _ => SelectedConfig != null);
         RemoveConfigCommand = new RelayCommand(_ => RemoveConfig(), _ => SelectedConfig != null);
-        StartConfigCommand = new RelayCommand(parameter => StartConfig(parameter));
+        StartConfigCommand = new RelayCommand(parameter => StartConfig(parameter), parameter => CanExecuteStartConfig(parameter));
+        StartAllConfigCommand = new RelayCommand(_ => StartAllConfigs(), _ => CanExecuteStartAllConfig());
     }
 
     private void AddConfig()
@@ -62,43 +63,84 @@ public class MainViewModel : INotifyPropertyChanged
     {
         if (parameter is ConfigModel config)
         {
-
-            config.Status = "In Progress";
-
-            //var tasksFromBackend = await _backendService.GetTasksAsync(SelectedConfig.TaskId);
-
-            var tasksFromBackend = new List<TaskModel>
+            if (config.Status != ConfigStatusEnum.InProgress)
             {
-                new TaskModel(){Code="code1", Description="desc1", Name="name1", Status="In progress" },
-                new TaskModel(){Code="code2", Description="desc2", Name="name2", Status="In progress" },
-                new TaskModel(){Code="code3", Description="desc3", Name="name3", Status="In progress" },
-                new TaskModel(){Code="code4", Description="desc4", Name="name4", Status="In progress" },
-                new TaskModel(){Code="code5", Description="desc5", Name="name5", Status="In progress" }
-            };
 
-            config.Tasks.Clear();
+                config.Status = ConfigStatusEnum.InProgress;
+                config.CanStart = false;
 
-            foreach (var task in tasksFromBackend)
-            {
-                config.Tasks.Add(task);
+                ((RelayCommand)StartConfigCommand).RaiseCanExecuteChanged();
+
+                //var tasksFromBackend = await _backendService.GetTasksAsync(SelectedConfig.TaskId);
+
+                var tasksFromBackend = new List<TaskModel>
+                {
+                new TaskModel(){Description="desc1", Name="name1", Status="In progress" },
+                new TaskModel(){Description="desc2", Name="name2", Status="In progress" },
+                new TaskModel(){Description="desc3", Name="name3", Status="In progress" },
+                new TaskModel(){Description="desc4", Name="name4", Status="In progress" },
+                new TaskModel(){Description="desc5", Name="name5", Status="In progress" }
+                };
+
+                config.Tasks.Clear();
+
+                foreach (var task in tasksFromBackend)
+                {
+                    config.Tasks.Add(task);
+                }
+
+                MessageBox.Show("Tasks added!");
+
+                await Task.Delay(5000);
+
+
+                foreach (var task in config.Tasks)
+                {
+                    //var result = await _backendService.ProcessTaskAsync(task, SelectedConfig.Language);
+                    task.Status = "Completed";
+                    await Task.Delay(1000);
+                }
+
+                UpdateConfigStatus(config);
             }
-
-            MessageBox.Show("Tasks added!");
-
-            await Task.Delay(5000);
-            
-
-            foreach (var task in config.Tasks)
-            {
-                //var result = await _backendService.ProcessTaskAsync(task, SelectedConfig.Language);
-                task.Status = "Completed";
-                task.Code = "Just a code";
-                await Task.Delay(1000);
-            }
-
-            UpdateConfigStatus(config);
         }
     }
+
+    private bool CanExecuteStartConfig(object parameter)
+    { 
+        if(parameter is ConfigModel config)
+        {
+            return config.CanStart;
+        }
+        return false;
+    }
+
+    private void StartAllConfigs()
+    {
+        foreach(var config in Configurations)
+        {
+            StartConfig(config);        
+        }
+    }
+
+    private bool CanExecuteStartAllConfig()
+    {
+        if (Configurations == null || Configurations.Count == 0)
+        {
+            return false;
+        }
+
+        foreach(var config in Configurations)
+        {
+            if(!config.CanStart)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 
     private void OpenConfigWindow(ConfigModel config)
     {
@@ -139,14 +181,16 @@ public class MainViewModel : INotifyPropertyChanged
     {
         if (!config.Tasks.Any())
         {
-            config.Status = "Pending";
+            config.Status = ConfigStatusEnum.Pending;
         }
 
         else
         {
-            config.Status = config.Tasks.All(task => task.Status == "Completed") ? "Completed" : "In Progress";
+            config.Status = config.Tasks.All(task => task.Status == "Completed") ? ConfigStatusEnum.Completed : ConfigStatusEnum.InProgress;
+            config.CanStart = config.Tasks.All(task => task.Status == "Completed") ? true : false;
         }
 
+        ((RelayCommand)StartConfigCommand).RaiseCanExecuteChanged();
         OnPropertyChanged(nameof(Configurations));
     }
     private void CheckAllTasksStatus()

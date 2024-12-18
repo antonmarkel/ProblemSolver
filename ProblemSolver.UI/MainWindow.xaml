@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:ProblemSolver.UI"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <ListView ItemsSource="{Binding Configurations}" SelectedItem="{Binding SelectedConfig}" Margin="10">
@@ -18,7 +19,10 @@
                         <GridViewColumn>
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Start" Command="{Binding DataContext.StartConfigCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}" />
+                                    <Button Content="Start"
+                                            Command="{Binding DataContext.StartConfigCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                            CommandParameter="{Binding}"
+                                            IsEnabled="{Binding CanStart}" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -30,6 +34,7 @@
             <Button Content="Add" Command="{Binding AddConfigCommand}" Margin="5"/>
             <Button Content="Edit" Command="{Binding EditConfigCommand}" Margin="5"/>
             <Button Content="Remove" Command="{Binding RemoveConfigCommand}" Margin="5"/>
+            <Button Content="Start all" Command="{Binding StartAllConfigCommand}" Margin="5"/>
         </StackPanel>
     </Grid>
 </Window>

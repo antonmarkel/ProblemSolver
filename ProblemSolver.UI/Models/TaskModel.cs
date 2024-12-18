@@ -6,7 +6,6 @@ public class TaskModel : INotifyPropertyChanged
     private string _name;
     private string _description;
     private string _status;
-    private string _code;
 
     public string Name
     {
@@ -36,16 +35,6 @@ public class TaskModel : INotifyPropertyChanged
         set
         {
             _status = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string Code
-    {
-        get => _code;
-        set
-        {
-            _code = value;
             OnPropertyChanged();
         }
     }

@@ -8,7 +8,8 @@ public class ConfigModel : INotifyPropertyChanged
     private string _neuralNetworkModel;
     private ProgrammingLanguageEnum _language;
     private int _taskId;
-    private string _status = "Pending";
+    private ConfigStatusEnum _status = ConfigStatusEnum.Pending;
+    private bool _canStart = true;
     private ObservableCollection<TaskModel> _tasks = new();
 
     public string NeuralNetworkModel
@@ -41,7 +42,7 @@ public class ConfigModel : INotifyPropertyChanged
         }
     }
 
-    public string Status
+    public ConfigStatusEnum Status
     {
         get => _status;
         set
@@ -57,6 +58,16 @@ public class ConfigModel : INotifyPropertyChanged
         set
         {
             _tasks = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool CanStart
+    {
+        get => _canStart;
+        set
+        {
+            _canStart = value;
             OnPropertyChanged();
         }
     }
