@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using ProblemSolver.Shared.Bot.Enums;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -19,15 +20,20 @@ public class ConfigViewModel : INotifyPropertyChanged
     }
 
     public ObservableCollection<TaskModel> Tasks { get; }
+    public ObservableCollection<BotEnum> NeuralNetworkModels { get; set; }
+    public ObservableCollection<ProgrammingLanguageEnum> Languages { get; set; }
 
     public ICommand SaveCommand { get; }
     public ICommand CancelCommand { get; }
 
     public ConfigViewModel(ConfigModel config)
     {
+        Config = config;
         Tasks = config.Tasks;
 
-        Config = config;
+        NeuralNetworkModels = new ObservableCollection<BotEnum>(Enum.GetValues(typeof(BotEnum)).Cast<BotEnum>());
+        Languages = new ObservableCollection<ProgrammingLanguageEnum>(Enum.GetValues(typeof(ProgrammingLanguageEnum)).Cast<ProgrammingLanguageEnum>());
+
         SaveCommand = new RelayCommand(_ => Save());
         CancelCommand = new RelayCommand(_ => Cancel());
     }

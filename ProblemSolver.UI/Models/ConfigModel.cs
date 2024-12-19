@@ -10,6 +10,7 @@ public class ConfigModel : INotifyPropertyChanged
     private int _taskId;
     private ConfigStatusEnum _status = ConfigStatusEnum.Pending;
     private bool _canStart = true;
+
     private ObservableCollection<TaskModel> _tasks = new();
 
     public BotEnum NeuralNetworkModel
@@ -52,22 +53,22 @@ public class ConfigModel : INotifyPropertyChanged
         }
     }
 
-    public ObservableCollection<TaskModel> Tasks
-    {
-        get => _tasks;
-        set
-        {
-            _tasks = value;
-            OnPropertyChanged();
-        }
-    }
-
     public bool CanStart
     {
         get => _canStart;
         set
         {
             _canStart = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<TaskModel> Tasks
+    {
+        get => _tasks;
+        set
+        {
+            _tasks = value;
             OnPropertyChanged();
         }
     }
