@@ -3,26 +3,44 @@ using ProblemSolver.Logic.BotServices.Implementations;
 using ProblemSolver.Logic.BotServices.Implementations.CodeExtractors;
 using ProblemSolver.Logic.BotServices.Implementations.TaskRequestConverters;
 using ProblemSolver.Logic.BotServices.Interfaces;
+using ProblemSolver.Logic.BotServices.Queues;
 using ProblemSolver.Logic.DlServices.Implementations;
 using ProblemSolver.Logic.DlServices.Interfaces;
+using ProblemSolver.Logic.SolverServices.Implementations;
+using ProblemSolver.Logic.SolverServices.Interfaces;
+using ProblemSolver.Persistence.Repositories.Implementations;
+using ProblemSolver.Persistence.Repositories.Interfaces;
 
-namespace ProblemSolver.UI.Extensions
+namespace ProblemSolver.UI.Extensions;
+
+public static class ApplicationExtensions
 {
-    public static class ApplicationExtensions
+    public static IServiceCollection AddBotServices(this IServiceCollection services)
     {
-        public static IServiceCollection AddBotServices(this IServiceCollection services)
-        {
-            return services.AddScoped<ICodeExtractor, StandardExtractor>()
-                .AddScoped<ITaskRequestConverter, StandardConverter>()
-                .AddScoped<IBotService, BotService>();
-        }
+        return services.AddScoped<ICodeExtractor, StandardExtractor>()
+            .AddScoped<IMessageConstructor, StandardMessageConstructor>()
+            .AddScoped<IBotService, BotService>()
+            .AddSingleton<SolutionQueue>();
+    }
 
-        public static IServiceCollection AddDlServices(this IServiceCollection services)
-        {
-            return services.AddScoped<IAuthService, AuthService>()
-                .AddScoped<ITaskExtractor, TaskExtractor>()
-                .AddScoped<ITaskTextProcessor, TaskTextProcessor>()
-                .AddTransient<ITaskSender, TaskSender>();
-        }
+    public static IServiceCollection AddDlServices(this IServiceCollection services)
+    {
+        return services.AddScoped<ILoginService, LoginService>()
+            .AddScoped<IRegisterService, RegisterService>()
+            .AddScoped<ITaskLinkExtractor, TaskLinkExtractor>()
+            .AddScoped<ITaskExtractor, TaskExtractor>()
+            .AddTransient<ITaskSender, TaskSender>()
+            .AddScoped<ICourseSubscriptionService, CourseSubscriptionService>();
+    }
+
+    public static IServiceCollection AddSolvers(this IServiceCollection services)
+    {
+        return services.AddSingleton<ISolver, StandardSolver>()
+            .AddScoped<ISolverManager, SolverManager>();
+    }
+
+    public static IServiceCollection AddPersistence(this IServiceCollection services)
+    {
+        return services.AddScoped<ISolverRepository, JsonSolverRepository>();
     }
 }

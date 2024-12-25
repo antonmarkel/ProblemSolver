@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ProblemSolver.Logic.SolverSevices.Interfaces
+﻿namespace ProblemSolver.Logic.SolverServices.Interfaces
 {
     public interface ISolver
     {
+        Task SolveAsync();
     }
 }

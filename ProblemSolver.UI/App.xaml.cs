@@ -24,11 +24,17 @@ public partial class App : Application
             {
                 services.Configure<BotConnectionConfig>(
                     context.Configuration.GetSection(nameof(BotConnectionConfig)));
+                services.Configure<BotStorageConfig>(
+                    context.Configuration.GetSection(nameof(BotStorageConfig)));
+                services.Configure<SolutionQueueConfig>(
+                    context.Configuration.GetSection(nameof(SolutionQueueConfig)));
 
                 services
                     .AddLogging()
+                    .AddPersistence()
                     .AddBotServices()
                     .AddDlServices()
+                    .AddSolvers()
                     .AddTransient<MainWindow>();
             })
             .Build();

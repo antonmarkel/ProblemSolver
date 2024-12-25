@@ -1,37 +1,27 @@
-﻿using HtmlAgilityPack;
+﻿using System.Text;
+using HtmlAgilityPack;
 using OneOf;
 using ProblemSolver.Logic.Results;
 using ProblemSolver.Shared.Tasks;
-using System.Text.RegularExpressions;
-using System.Text;
 
 namespace ProblemSolver.Logic.Helpers
 {
     public static class TextExtractor
     {
-        public static async Task<List<TaskInfo>> ProcessTasksAsync(List<TaskLink> taskLinks, HttpClient client)
+        public static async Task<TaskInfo> ProcessTaskAsync(TaskLink link, HttpClient client)
         {
-            var infoList = new List<TaskInfo>(taskLinks.Count);
-            foreach (var link in taskLinks)
-            {
-                var htmlContentResult = await ExtractHtmlContentAsync(link.Url, client);
-                var info = htmlContentResult.Match<TaskInfo>(
-                    info => new TaskInfo { Info = info, IsExtracted = true, TaskId = link.Id },
-                    _ => new TaskInfo { IsExtracted = false, TaskId = link.Id });
+            var htmlContentResult = await ExtractHtmlContentAsync(link.Url, client);
 
-                if (info.IsExtracted)
-                {
-                    var htmlDoc = new HtmlDocument();
-                    htmlDoc.LoadHtml(info.Info);
-                    string textContent = ExtractText(htmlDoc.DocumentNode);
-                    if (textContent.Length < 10) info.IsExtracted = false;
-                    info.Info = Regex.Unescape(textContent);
-                }
+            if (htmlContentResult.IsT1)
+                return new TaskInfo { CourseId = link.CourseId, TaskId = link.TaskId, Extracted = false };
 
-                infoList.Add(info);
-            }
 
-            return infoList;
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlContentResult.AsT0);
+            string textContent = ExtractText(htmlDoc.DocumentNode);
+
+            return new TaskInfo
+                { CourseId = link.CourseId, TaskId = link.TaskId, Task = textContent };
         }
 
         private static async Task<OneOf<string, Failed>> ExtractHtmlContentAsync(string url, HttpClient client)

@@ -1,34 +1,39 @@
-﻿using System.Text.RegularExpressions;
-using OneOf;
+﻿using OneOf;
 using ProblemSolver.Logic.DlServices.Interfaces;
+using ProblemSolver.Logic.Helpers;
 using ProblemSolver.Logic.Results;
 using ProblemSolver.Shared.Tasks;
 
-namespace ProblemSolver.Logic.DlServices.Implementations
+namespace ProblemSolver.Logic.DlServices.Implementations;
+
+public class TaskExtractor : ITaskExtractor
 {
-    public class TaskExtractor : ITaskExtractor
+    private readonly ITaskLinkExtractor _linkExtractor;
+
+    public TaskExtractor(ITaskLinkExtractor linkExtractor)
     {
-        public async Task<OneOf<List<TaskLink>, Failed>> ExtractAsync(long courseId, HttpClient client)
-        {
-            var treeTaskResponse = await client.GetAsync($"tasktree.jsp?cid={courseId}");
-            string content = await treeTaskResponse.Content.ReadAsStringAsync();
+        _linkExtractor = linkExtractor;
+    }
 
-            var regex = new Regex(@"task\.jsp\?nid=(\d+)&cid=(\d+)");
-            var matches = regex.Matches(content);
+    public async Task<OneOf<List<TaskInfo>, Failed>> ExtractTasksAsync(long courseId, HttpClient client)
+    {
+        var linksResult = await _linkExtractor.ExtractFromCourseAsync(courseId, client);
 
-            List<TaskLink> urls = new(matches.Count);
+        if (linksResult.IsT1)
+            return linksResult.AsT1;
 
-            foreach (Match match in matches)
-            {
-                long nid = long.Parse(match.Groups[1].Value);
-                long cid = long.Parse(match.Groups[2].Value);
-                urls.Add(new TaskLink { Id = nid, Url = $"taskview.jsp?nid={nid}&cid={cid}&showcfg=1" });
-            }
+        var result = new List<TaskInfo>(linksResult.AsT0.Count);
 
-            if (urls.Count == 0)
-                return new Failed();
+        foreach (var link in linksResult.AsT0)
+            result.Add(await ExtractTaskAsync(link, client));
 
-            return urls;
-        }
+        return result;
+    }
+
+    public async Task<TaskInfo> ExtractTaskAsync(TaskLink link, HttpClient client)
+    {
+        var info = await TextExtractor.ProcessTaskAsync(link, client);
+
+        return info;
     }
 }

@@ -2,10 +2,11 @@
 using ProblemSolver.Logic.Results;
 using ProblemSolver.Shared.Tasks;
 
-namespace ProblemSolver.Logic.DlServices.Interfaces
+namespace ProblemSolver.Logic.DlServices.Interfaces;
+
+public interface ITaskExtractor
 {
-    public interface ITaskExtractor
-    {
-        Task<OneOf<List<TaskLink>, Failed>> ExtractAsync(long courseId, HttpClient client);
-    }
+    Task<OneOf<List<TaskInfo>, Failed>> ExtractTasksAsync(long courseId, HttpClient client);
+    Task<TaskInfo> ExtractTaskAsync(TaskLink link, HttpClient client);
 }
+

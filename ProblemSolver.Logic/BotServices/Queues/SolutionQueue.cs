@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.Options;
 using ProblemSolver.Configuration.Bot;
 using ProblemSolver.Logic.BotServices.Interfaces;
 using ProblemSolver.Shared.Bot.Dtos.Requests;
-using System.Collections.Concurrent;
 
 namespace ProblemSolver.Logic.BotServices.Queues
 {
@@ -10,15 +10,18 @@ namespace ProblemSolver.Logic.BotServices.Queues
     {
         private readonly SolutionQueueConfig _queueConfig;
         private readonly IBotService _botService;
+        private readonly ICodeExtractor _codeExtractor;
         private SemaphoreSlim _queueSemaphore;
         private ConcurrentQueue<(Action<string>, SolutionRequest)> _queue;
 
         private bool _stopped = true;
 
-        public SolutionQueue(IOptions<SolutionQueueConfig> queueConfig, IBotService botService)
+        public SolutionQueue(IOptions<SolutionQueueConfig> queueConfig, IBotService botService,
+            ICodeExtractor codeExtractor)
         {
             _queueConfig = queueConfig.Value;
             _botService = botService;
+            _codeExtractor = codeExtractor;
             _queueSemaphore = new SemaphoreSlim(_queueConfig.DegreeOfParallelism);
             _queue = new ConcurrentQueue<(Action<string>, SolutionRequest)>();
         }
@@ -30,7 +33,9 @@ namespace ProblemSolver.Logic.BotServices.Queues
 
         public void Start()
         {
-            _stopped = true;
+            _stopped = false;
+            _ = ProcessQueueAsync();
+
         }
 
         public void Finish()
@@ -42,30 +47,36 @@ namespace ProblemSolver.Logic.BotServices.Queues
         {
             while (!_stopped)
             {
-                if(!_queue.TryDequeue(out _))
-                {
-                    await Task.Delay(100);
-                    continue;
-                }
+                await _queueSemaphore.WaitAsync();
 
-                _ = Task.Run(async () =>
+                if (_queue.TryDequeue(out var queueItem))
                 {
-                    await _queueSemaphore.WaitAsync();
-
-                    if (_queue.TryDequeue(out var queueItem))
+                    try
                     {
                         var callback = queueItem.Item1;
                         var request = queueItem.Item2;
+
                         var result = await _botService.ProcessRequestAsync(request);
+
                         if (result.IsT0)
                         {
-                            callback.Invoke(result.AsT0);
+                            string code = _codeExtractor.ExtractCode(result.AsT0);
+                            callback.Invoke(code);
                         }
                     }
-
-                    _queueSemaphore.Release();
-                });
-        
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error processing queue item: {ex.Message}");
+                    }
+                    finally
+                    {
+                        _queueSemaphore.Release();
+                    }
+                }
+                else
+                {
+                    await Task.Delay(100);
+                }
             }
         }
     }

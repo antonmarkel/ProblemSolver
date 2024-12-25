@@ -7,14 +7,14 @@ using ProblemSolver.UI.DL.Auth;
 
 namespace ProblemSolver.Logic.DlServices.Implementations;
 
-public class AuthService : IAuthService
+public class LoginService : ILoginService
 {
-    public async Task<OneOf<Success, WrongCredentials>> LoginAsync(LoginRequest request, HttpClient client)
+    public async Task<OneOf<Success, WrongCredentials>> LoginAsync(LoginInfo request, HttpClient client)
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         Dictionary<string, string> formData = new()
         {
-            { "id", request.Id.ToString() },
+            { "id", request.Id },
             { "password", request.Password },
             { "lng", "ru" },
             { "logon", "submit" }

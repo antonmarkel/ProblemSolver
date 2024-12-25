@@ -1,13 +1,10 @@
-﻿using System.Collections.Concurrent;
-using System.IO;
+﻿using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Windows;
-using ProblemSolver.Logic.BotServices.Interfaces;
-using ProblemSolver.Logic.DlServices.Interfaces;
-using ProblemSolver.Shared.Bot.Dtos.Requests;
+using ProblemSolver.Logic.SolverServices.Interfaces;
 using ProblemSolver.Shared.Bot.Enums;
-using ProblemSolver.Shared.Tasks;
-using ProblemSolver.UI.DL.Auth;
+using ProblemSolver.Shared.Solvers;
 
 namespace ProblemSolver.UI
 {
@@ -16,126 +13,45 @@ namespace ProblemSolver.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly IBotService _botService;
-        private readonly IAuthService _authService;
-        private readonly ITaskExtractor _taskExtractor;
-        private readonly ITaskTextProcessor _taskTextProcessor;
-        private readonly ITaskSender _taskSender;
+        private readonly ISolverManager _solverManager;
 
-        public MainWindow(IBotService botService, IAuthService authService, ITaskExtractor taskExtractor,
-            ITaskTextProcessor taskTextProcessor, ITaskSender taskSender)
+        public MainWindow(ISolverManager solverManager)
         {
-            _botService = botService;
-            _authService = authService;
-            _taskExtractor = taskExtractor;
-            _taskTextProcessor = taskTextProcessor;
-            _taskSender = taskSender;
+            _solverManager = solverManager;
+
             InitializeComponent();
         }
 
         private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            int courseId = 1374;
-            using var client = new HttpClient
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var client = CreateDlClient();
+            var accountSettings = new SolverSettings
+            {
+                AiBot = BotEnum.Meta_Llama_3_1_70B_Instruct,
+                Language = ProgrammingLanguageEnum.Cpp,
+                Name = "Beta"
+            };
+            _ = await _solverManager.AddSolverAccountAsync(accountSettings, client);
+            accountSettings.Language = ProgrammingLanguageEnum.Python;
+            accountSettings.Name = "Beta py";
+            _ = await _solverManager.AddSolverAccountAsync(accountSettings, client);
+        }
+
+        private HttpClient CreateDlClient()
+        {
+            var cookieContainer = new CookieContainer();
+            var handler = new HttpClientHandler
+            {
+                CookieContainer = cookieContainer
+            };
+
+            var client = new HttpClient(handler)
             {
                 BaseAddress = new Uri("https://dl.gsu.by/")
             };
-            var loginRequest = new LoginRequest
-            {
-                Id = 193391,
-                Password = "sweety_bot"
-            };
 
-            var loginResult = await _authService.LoginAsync(loginRequest, client);
-            if (loginResult.IsT1)
-            {
-                InfoTextBlock.Text = "failed to log in";
-
-                return;
-            }
-
-            Console.WriteLine("Logged in successfully");
-            var extractResult = await _taskExtractor.ExtractAsync(courseId, client);
-            if (extractResult.IsT1)
-            {
-                InfoTextBlock.Text = "failed to get tasks";
-
-                return;
-            }
-
-            Console.WriteLine("Got tasks successfully");
-            var taskInfos = await _taskTextProcessor.ProcessTasksAsync(extractResult.AsT0, client);
-            Console.WriteLine("Extracted tasks successfully");
-            int count = 0;
-            var tasks = new List<Task>();
-            var codeToSave = new ConcurrentStack<(string, string)>();
-            var infoToSave = new ConcurrentStack<(string, string)>();
-            var toSend = new List<(string, long, long)>();
-
-
-            string solutionsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sol");
-            Directory.CreateDirectory(solutionsPath);
-            string coursePath = Path.Combine(solutionsPath, $"c{courseId}");
-            Directory.CreateDirectory(coursePath);
-            foreach (var info in taskInfos)
-                if (info.IsExtracted)
-                {
-                    count++;
-                    var task = Task.Run(async () =>
-                    {
-                        var request = new TaskRequest
-                        {
-                            Language = ProgrammingLanguageEnum.Cpp,
-                            Task = new TaskInfo { Info = info.Info, IsExtracted = true, TaskId = info.TaskId },
-                            UseBot = BotEnum.Meta_Llama_3_1_70B_Instruct
-                        };
-
-                        var codeResponse = await _botService.ProcessRequestAsync(request);
-
-
-                        if (codeResponse.Code == "Failed")
-                        {
-                            Console.WriteLine($"Cannot extract code! {count}");
-
-                            return;
-                        }
-
-                        string taskPath = Path.Combine(coursePath, $"info{request.Task.TaskId}.txt");
-                        infoToSave.Push(new ValueTuple<string, string>(request.Task.Info!, taskPath));
-
-                        string filePath = Path.Combine(coursePath, $"t{request.Task.TaskId}.cpp");
-                        codeToSave.Push(new ValueTuple<string, string>(codeResponse.Code, filePath));
-
-                        toSend.Add(new ValueTuple<string, long, long>(filePath, courseId, request.Task.TaskId));
-                    });
-                    await Task.Delay(500);
-                    tasks.Add(task);
-                }
-
-            Task.WaitAll(tasks.ToArray());
-            Console.WriteLine("Tasks were solved!");
-
-            while (!codeToSave.IsEmpty)
-            {
-                (string, string) data;
-                if (codeToSave.TryPop(out data)) await File.WriteAllTextAsync(data.Item2, data.Item1);
-            }
-
-            Console.WriteLine("Code was saved!");
-            while (!infoToSave.IsEmpty)
-            {
-                (string, string) data;
-                if (infoToSave.TryPop(out data)) await File.WriteAllTextAsync(data.Item2, data.Item1);
-            }
-
-            Console.WriteLine("Info was saved");
-            foreach (var sendData in toSend)
-            {
-                await _taskSender.SendToCheckAsync(sendData.Item1, client, sendData.Item2, sendData.Item3);
-                await Task.Delay(10000);
-            }
-
-            Console.WriteLine("Finished!");
+            return client;
         }
     }
 }
