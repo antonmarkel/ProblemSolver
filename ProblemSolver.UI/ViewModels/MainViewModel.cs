@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using ProblemSolver.UI;
+using ProblemSolver.UI.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -34,7 +34,7 @@ public class MainViewModel : INotifyPropertyChanged
         Configurations = new ObservableCollection<ConfigModel>();
 
         AddConfigCommand = new RelayCommand(_ => AddConfig());
-        EditConfigCommand = new RelayCommand(_ => EditConfig(), _ => SelectedConfig != null);
+        EditConfigCommand = new RelayCommand(_ => CheckConfig(), _ => SelectedConfig != null);
         RemoveConfigCommand = new RelayCommand(_ => RemoveConfig(), _ => SelectedConfig != null);
         StartConfigCommand = new RelayCommand(parameter => StartConfig(parameter), parameter => CanExecuteStartConfig(parameter));
         StartAllConfigCommand = new RelayCommand(_ => StartAllConfigs(), _ => CanExecuteStartAllConfig());
@@ -43,13 +43,13 @@ public class MainViewModel : INotifyPropertyChanged
     private void AddConfig()
     {
         var newConfig = new ConfigModel();
-        OpenConfigWindow(newConfig);
+        AddConfigWindow(newConfig);
         SaveConfigurations();
     }
 
-    private void EditConfig()
+    private void CheckConfig()
     {
-        OpenConfigWindow(SelectedConfig);
+        CheckConfigWindow(SelectedConfig);
         SaveConfigurations();
     }
 
@@ -142,11 +142,11 @@ public class MainViewModel : INotifyPropertyChanged
     }
 
 
-    private void OpenConfigWindow(ConfigModel config)
+    private void AddConfigWindow(ConfigModel config)
     {
         var configViewModel = new ConfigViewModel(config);
 
-        var configWindow = new ConfigWindow { DataContext = configViewModel };
+        var configWindow = new AddConfigWindow { DataContext = configViewModel };
 
         configWindow.ShowDialog();
 
@@ -157,6 +157,17 @@ public class MainViewModel : INotifyPropertyChanged
                 Configurations.Add(config);
             }
         }
+        UpdateConfigStatus(config);
+    }
+
+    private void CheckConfigWindow(ConfigModel config)
+    {
+        var configViewModel = new ConfigViewModel(config);
+
+        var configWindow = new CheckConfigWindow { DataContext = configViewModel };
+
+        configWindow.ShowDialog();
+
         UpdateConfigStatus(config);
     }
 
