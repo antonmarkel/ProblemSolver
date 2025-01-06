@@ -2,7 +2,8 @@
 
 public class TaskInfo
 {
+    public required long CourseId { get; set; }
     public required long TaskId { get; set; }
-    public string? Info { get; set; }
-    public required bool IsExtracted { get; set; }
+    public string? Task { get; set; }
+    public bool Extracted { get; set; } = true;
 }

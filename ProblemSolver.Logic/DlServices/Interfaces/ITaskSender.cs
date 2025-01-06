@@ -1,6 +1,8 @@
-﻿namespace ProblemSolver.Logic.DlServices.Interfaces;
+﻿using ProblemSolver.Shared.Tasks;
+
+namespace ProblemSolver.Logic.DlServices.Interfaces;
 
 public interface ITaskSender
 {
-    Task SendToCheckAsync(string filePath, HttpClient client, long courseId, long taskId);
+    Task SendToCheckAsync(TaskSolution solution, HttpClient client, string folderName);
 }
