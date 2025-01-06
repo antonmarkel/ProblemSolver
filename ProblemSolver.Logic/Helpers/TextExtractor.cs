@@ -60,7 +60,7 @@ namespace ProblemSolver.Logic.Helpers
                 if (child.Name == "script" || child.Name == "style")
                     continue;
 
-                textBuilder.Append(ExtractText(child));
+                textBuilder.AppendLine(ExtractText(child));
             }
 
             return textBuilder.ToString().Trim().Replace("&nbsp;", "");

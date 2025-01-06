@@ -4,5 +4,5 @@ namespace ProblemSolver.Logic.DlServices.Interfaces;
 
 public interface ITaskSender
 {
-    Task SendToCheckAsync(TaskSolution solution, HttpClient client);
+    Task SendToCheckAsync(TaskSolution solution, HttpClient client, string folderName);
 }

@@ -30,12 +30,15 @@ public static class ApplicationExtensions
             .AddScoped<ITaskLinkExtractor, TaskLinkExtractor>()
             .AddScoped<ITaskExtractor, TaskExtractor>()
             .AddTransient<ITaskSender, TaskSender>()
-            .AddScoped<ICourseSubscriptionService, CourseSubscriptionService>();
+            .AddScoped<ICourseSubscriptionService, CourseSubscriptionService>()
+            .AddScoped<IDlClientFactory, DlClientFactory>()
+            .AddScoped<ISolutionVerdictLogAccessor, SolutionVerdictLogAccessor>();
     }
 
     public static IServiceCollection AddSolvers(this IServiceCollection services)
     {
         return services.AddSingleton<ISolver, StandardSolver>()
+            .AddScoped<ISolverFactory<StandardSolver>, StandardSolverFactory>()
             .AddScoped<ISolverManager, SolverManager>();
     }
 

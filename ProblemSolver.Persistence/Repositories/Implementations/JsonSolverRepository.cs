@@ -18,9 +18,10 @@ namespace ProblemSolver.Persistence.Repositories.Implementations
         private async Task EnsureFileExistsAsync()
         {
             if (!File.Exists(_config.FilePath))
+            {
                 File.Create(_config.FilePath);
-
-            await File.WriteAllTextAsync(Path.Combine(_config.FilePath), "[]");
+                await File.WriteAllTextAsync(Path.Combine(_config.FilePath), "[]");
+            }
         }
 
         public async Task<List<SolverAccount>> GetAllAccountsAsync()

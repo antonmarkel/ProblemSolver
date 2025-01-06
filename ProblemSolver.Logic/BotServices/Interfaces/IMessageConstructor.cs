@@ -4,6 +4,6 @@ namespace ProblemSolver.Logic.BotServices.Interfaces
 {
     public interface IMessageConstructor
     {
-        public string ConvertToMessage(string task, ProgrammingLanguageEnum language);
+        public string ConvertToMessage(string task, ProgrammingLanguageEnum language, string[]? additionalProps = null);
     }
 }

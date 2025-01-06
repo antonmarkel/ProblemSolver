@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using ProblemSolver.Configuration.Bot;
 using ProblemSolver.Logic.BotServices.Interfaces;
+using ProblemSolver.Logic.Helpers;
 using ProblemSolver.Shared.Bot.Dtos.Requests;
 
 namespace ProblemSolver.Logic.BotServices.Queues
@@ -11,7 +12,7 @@ namespace ProblemSolver.Logic.BotServices.Queues
         private readonly SolutionQueueConfig _queueConfig;
         private readonly IBotService _botService;
         private readonly ICodeExtractor _codeExtractor;
-        private SemaphoreSlim _queueSemaphore;
+        private List<Task> Tasks { get; }
         private ConcurrentQueue<(Action<string>, SolutionRequest)> _queue;
 
         private bool _stopped = true;
@@ -22,7 +23,11 @@ namespace ProblemSolver.Logic.BotServices.Queues
             _queueConfig = queueConfig.Value;
             _botService = botService;
             _codeExtractor = codeExtractor;
-            _queueSemaphore = new SemaphoreSlim(_queueConfig.DegreeOfParallelism);
+
+            Tasks = new List<Task>(_queueConfig.DegreeOfParallelism);
+            for (int i = 0; i < Tasks.Capacity; i++)
+                Tasks.Add(Task.CompletedTask);
+
             _queue = new ConcurrentQueue<(Action<string>, SolutionRequest)>();
         }
 
@@ -47,36 +52,40 @@ namespace ProblemSolver.Logic.BotServices.Queues
         {
             while (!_stopped)
             {
-                await _queueSemaphore.WaitAsync();
-
-                if (_queue.TryDequeue(out var queueItem))
-                {
-                    try
-                    {
-                        var callback = queueItem.Item1;
-                        var request = queueItem.Item2;
-
-                        var result = await _botService.ProcessRequestAsync(request);
-
-                        if (result.IsT0)
+                for (int i = 0; i < Tasks.Count; i++)
+                    if (Tasks[i].IsCompleted)
+                        if (_queue.TryDequeue(out var queueItem))
                         {
-                            string code = _codeExtractor.ExtractCode(result.AsT0);
-                            callback.Invoke(code);
+                            Tasks[i] = ProcessQueueItemAsync(queueItem);
+                            Console.WriteLine("Got a free slot to process! Sent a new task");
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error processing queue item: {ex.Message}");
-                    }
-                    finally
-                    {
-                        _queueSemaphore.Release();
-                    }
-                }
-                else
+
+                await Task.Delay(100);
+            }
+        }
+
+        private async Task ProcessQueueItemAsync((Action<string> callback, SolutionRequest request) queueItem)
+        {
+            try
+            {
+                var callback = queueItem.callback;
+                var request = queueItem.request;
+
+                Console.WriteLine("Adding task to solutions");
+                var result = await _botService.ProcessRequestAsync(request);
+
+                if (result.IsT0)
                 {
-                    await Task.Delay(100);
+                    await FileWriter.WriteToFileAsync($"ai-answers/{request.CourseId}/{request.BotName}",
+                        $"{request.TaskId}.txt", result.AsT0);
+
+                    string code = _codeExtractor.ExtractCode(result.AsT0);
+                    callback.Invoke(code);
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing queue item: {ex.Message}");
             }
         }
     }

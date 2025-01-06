@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProblemSolver.Configuration.Bot;
+using ProblemSolver.Configuration.Solvers;
 using ProblemSolver.UI.Extensions;
 
 namespace ProblemSolver.UI;
@@ -28,6 +29,8 @@ public partial class App : Application
                     context.Configuration.GetSection(nameof(BotStorageConfig)));
                 services.Configure<SolutionQueueConfig>(
                     context.Configuration.GetSection(nameof(SolutionQueueConfig)));
+                services.Configure<RetryPolicy>(
+                    context.Configuration.GetSection(nameof(RetryPolicy)));
 
                 services
                     .AddLogging()

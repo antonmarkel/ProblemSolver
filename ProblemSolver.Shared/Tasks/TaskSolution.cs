@@ -10,6 +10,7 @@ namespace ProblemSolver.Shared.Tasks
             Language = language;
         }
 
+        public required string SolutionName { get; set; }
         public long CourseId { get; set; }
         public long TaskId { get; set; }
         public string Code { get; }

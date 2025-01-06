@@ -1,10 +1,11 @@
-﻿using System.Net;
-using System.Net.Http;
+﻿using System.Collections.Immutable;
 using System.Text;
 using System.Windows;
+using ProblemSolver.Logic.BotServices.Queues;
+using ProblemSolver.Logic.DlServices.Interfaces;
+using ProblemSolver.Logic.SolverServices.Implementations;
 using ProblemSolver.Logic.SolverServices.Interfaces;
-using ProblemSolver.Shared.Bot.Enums;
-using ProblemSolver.Shared.Solvers;
+using ProblemSolver.Shared.Tasks;
 
 namespace ProblemSolver.UI
 {
@@ -14,10 +15,22 @@ namespace ProblemSolver.UI
     public partial class MainWindow : Window
     {
         private readonly ISolverManager _solverManager;
+        private readonly ITaskExtractor _taskExtractor;
+        private readonly ILoginService _loginService;
+        private readonly ISolverFactory<StandardSolver> _solverFactory;
+        private readonly ICourseSubscriptionService _courseSubscriptionService;
+        private readonly SolutionQueue _queue;
 
-        public MainWindow(ISolverManager solverManager)
+        public MainWindow(ISolverManager solverManager, ITaskExtractor taskExtractor,
+            ISolverFactory<StandardSolver> solverFactory, ICourseSubscriptionService courseSubscriptionService,
+            ILoginService loginService, SolutionQueue queue)
         {
             _solverManager = solverManager;
+            _taskExtractor = taskExtractor;
+            _solverFactory = solverFactory;
+            _courseSubscriptionService = courseSubscriptionService;
+            _loginService = loginService;
+            _queue = queue;
 
             InitializeComponent();
         }
@@ -25,33 +38,32 @@ namespace ProblemSolver.UI
         private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            var client = CreateDlClient();
-            var accountSettings = new SolverSettings
-            {
-                AiBot = BotEnum.Meta_Llama_3_1_70B_Instruct,
-                Language = ProgrammingLanguageEnum.Cpp,
-                Name = "Beta"
-            };
-            _ = await _solverManager.AddSolverAccountAsync(accountSettings, client);
-            accountSettings.Language = ProgrammingLanguageEnum.Python;
-            accountSettings.Name = "Beta py";
-            _ = await _solverManager.AddSolverAccountAsync(accountSettings, client);
-        }
 
-        private HttpClient CreateDlClient()
-        {
-            var cookieContainer = new CookieContainer();
-            var handler = new HttpClientHandler
-            {
-                CookieContainer = cookieContainer
-            };
+            Console.WriteLine("Button Clicked! Process will now begin!");
+            var solverAccounts = await _solverManager.GetAllSolversAsync();
+            int courseId = 1372;
 
-            var client = new HttpClient(handler)
+            var solvers = new List<StandardSolver>(solverAccounts.Count);
+            foreach (var account in solverAccounts)
             {
-                BaseAddress = new Uri("https://dl.gsu.by/")
-            };
+                var solver = _solverFactory.CreateSolver(account);
+                await _loginService.LoginAsync(account, solver.HttpClient);
+                await _courseSubscriptionService.EnsureSubscriptionToCourseAsync(courseId, solver.HttpClient);
+                solvers.Add(solver);
+            }
 
-            return client;
+            var tasksResult = await _taskExtractor.ExtractTasksAsync(courseId, solvers[0].HttpClient);
+
+            var tasks = tasksResult.AsT0;
+            foreach (var solver in solvers)
+            {
+                var copiedTasks = new List<TaskInfo?>(tasks.Count);
+                foreach (var task in tasks) copiedTasks.Add(task);
+                Console.WriteLine("Starting solver");
+                _ = solver.SolveAsync(copiedTasks.ToImmutableList()!);
+            }
+
+            _queue.Start();
         }
     }
 }

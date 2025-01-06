@@ -6,7 +6,8 @@
         Awaiting = 1,
         Solving = 2,
         Checking = 3,
-        Solved = 4,
-        NotSolved = 5
+        Retrying = 4,
+        Solved = 5,
+        NotSolved = 6
     }
 }

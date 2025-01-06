@@ -7,7 +7,7 @@ namespace ProblemSolver.Logic.DlServices.Implementations
 {
     public class TaskSender : ITaskSender
     {
-        public async Task SendToCheckAsync(TaskSolution solution, HttpClient client)
+        public async Task SendToCheckAsync(TaskSolution solution, HttpClient client, string folderName)
         {
             using var formContent = new MultipartFormDataContent
             {
@@ -18,19 +18,12 @@ namespace ProblemSolver.Logic.DlServices.Implementations
                 { new StringContent("50"), "DelTA4 at NIT1 Win10 x64" }
             };
 
-            string filePath =
-                $"solutions/{solution.CourseId}/{solution.TaskId}.{LanguageHelper.LanguageToFileExtension(solution.Language)}";
-
-            if (File.Exists(filePath))
-                File.Delete(filePath);
-
-            File.Create(filePath);
-            await File.WriteAllTextAsync(filePath, solution.Code);
-
-            var fileStream = File.OpenRead(filePath);
-            var fileContent = new StreamContent(fileStream);
+            var stream = await PrepareStreamAsync(solution, folderName);
+            var fileContent = new StreamContent(stream);
             fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            formContent.Add(fileContent, "f", Path.GetFileName(filePath));
+            formContent.Add(fileContent, "f",
+                Path.GetFileName(
+                    $"{solution.SolutionName}.{LanguageHelper.LanguageToFileExtension(solution.Language)}"));
 
 
             formContent.Add(new StringContent("Отправить"), "bsubmit");
@@ -41,13 +34,25 @@ namespace ProblemSolver.Logic.DlServices.Implementations
                 response.EnsureSuccessStatusCode();
                 string responseString = await response.Content.ReadAsStringAsync();
                 Console.WriteLine("Form submitted successfully!");
-                Console.WriteLine("Server Response:");
-                Console.WriteLine(responseString);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("An error occurred while submitting the form: " + ex.Message);
             }
         }
+
+
+        private async Task<Stream> PrepareStreamAsync(TaskSolution solution, string folderName)
+        {
+            string folderPath = $"solutions/{solution.CourseId}/{folderName}";
+            string fileName = $"{solution.SolutionName}.{LanguageHelper.LanguageToFileExtension(solution.Language)}";
+            string filePath =
+                $"{folderPath}/{fileName}";
+
+            await FileWriter.WriteToFileAsync(folderPath, fileName, solution.Code);
+
+            return File.OpenRead(filePath);
+        }
     }
 }
+    
