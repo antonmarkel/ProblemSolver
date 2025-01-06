@@ -1,11 +1,12 @@
-﻿using System.ComponentModel;
+﻿using ProblemSolver.Shared.Tasks.Enums;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 public class TaskModel : INotifyPropertyChanged
 {
     private string _name;
     private string _description;
-    private string _status;
+    private TaskState _status;
 
     public string Name
     {
@@ -29,7 +30,7 @@ public class TaskModel : INotifyPropertyChanged
 
     //TODO Create StatusEnum
 
-    public string Status
+    public TaskState Status
     {
         get => _status;
         set

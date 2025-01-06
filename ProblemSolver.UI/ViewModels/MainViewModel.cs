@@ -5,7 +5,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.IO;
-using System.Windows;
+using ProblemSolver.Shared.Tasks.Enums;
+using ProblemSolver.Logic.SolverServices.Interfaces;
 
 public class MainViewModel : INotifyPropertyChanged
 {
@@ -31,6 +32,7 @@ public class MainViewModel : INotifyPropertyChanged
 
     public MainViewModel()
     {
+        // TODO: Replace List of congigurations with repository
         Configurations = new ObservableCollection<ConfigModel>();
 
         AddConfigCommand = new RelayCommand(_ => AddConfig());
@@ -75,11 +77,11 @@ public class MainViewModel : INotifyPropertyChanged
 
                 var tasksFromBackend = new List<TaskModel>
                 {
-                new TaskModel(){Description="desc1", Name="name1", Status="In progress" },
-                new TaskModel(){Description="desc2", Name="name2", Status="In progress" },
-                new TaskModel(){Description="desc3", Name="name3", Status="In progress" },
-                new TaskModel(){Description="desc4", Name="name4", Status="In progress" },
-                new TaskModel(){Description="desc5", Name="name5", Status="In progress" }
+                new TaskModel(){Description="desc1", Name="name1", Status=TaskState.Awaiting },
+                new TaskModel(){Description="desc2", Name="name2", Status=TaskState.Awaiting },
+                new TaskModel(){Description="desc3", Name="name3", Status=TaskState.Awaiting },
+                new TaskModel(){Description="desc4", Name="name4", Status=TaskState.Awaiting },
+                new TaskModel(){Description="desc5", Name="name5", Status=TaskState.Awaiting }
                 };
 
                 config.Tasks.Clear();
@@ -97,7 +99,7 @@ public class MainViewModel : INotifyPropertyChanged
                 foreach (var task in config.Tasks)
                 {
                     //var result = await _backendService.ProcessTaskAsync(task, SelectedConfig.Language);
-                    task.Status = "Completed";
+                    task.Status = TaskState.Solved;
                     await Task.Delay(1000);
                 }
 
@@ -197,8 +199,8 @@ public class MainViewModel : INotifyPropertyChanged
 
         else
         {
-            config.Status = config.Tasks.All(task => task.Status == "Completed") ? ConfigStatusEnum.Completed : ConfigStatusEnum.InProgress;
-            config.CanStart = config.Tasks.All(task => task.Status == "Completed") ? true : false;
+            config.Status = config.Tasks.All(task => task.Status == TaskState.Solved) ? ConfigStatusEnum.Completed : ConfigStatusEnum.InProgress;
+            config.CanStart = config.Tasks.All(task => task.Status == TaskState.Solved) ? true : false;
         }
 
         ((RelayCommand)StartConfigCommand).RaiseCanExecuteChanged();

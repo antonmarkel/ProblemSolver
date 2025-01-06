@@ -1,4 +1,5 @@
 ﻿using ProblemSolver.Shared.Bot.Enums;
+using ProblemSolver.Shared.Tasks;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -10,8 +11,7 @@ public class ConfigModel : INotifyPropertyChanged
     private int _taskId;
     private ConfigStatusEnum _status = ConfigStatusEnum.Pending;
     private bool _canStart = true;
-
-    private ObservableCollection<TaskModel> _tasks = new();
+    private ObservableCollection<TaskInfo> _tasks = new();
 
     public BotEnum NeuralNetworkModel
     {
