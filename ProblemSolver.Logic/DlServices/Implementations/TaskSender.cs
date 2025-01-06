@@ -7,6 +7,13 @@ namespace ProblemSolver.Logic.DlServices.Implementations
 {
     public class TaskSender : ITaskSender
     {
+        /// <summary>
+        ///     Saves solutions and sends them
+        /// </summary>
+        /// <param name="solution"></param>
+        /// <param name="client"></param>
+        /// <param name="folderName"></param>
+        /// <returns></returns>
         public async Task SendToCheckAsync(TaskSolution solution, HttpClient client, string folderName)
         {
             using var formContent = new MultipartFormDataContent
@@ -44,6 +51,7 @@ namespace ProblemSolver.Logic.DlServices.Implementations
 
         private async Task<Stream> PrepareStreamAsync(TaskSolution solution, string folderName)
         {
+            //TODO: configure
             string folderPath = $"solutions/{solution.CourseId}/{folderName}";
             string fileName = $"{solution.SolutionName}.{LanguageHelper.LanguageToFileExtension(solution.Language)}";
             string filePath =

@@ -9,9 +9,6 @@ using ProblemSolver.Shared.Tasks;
 
 namespace ProblemSolver.UI
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private readonly ISolverManager _solverManager;
@@ -41,7 +38,7 @@ namespace ProblemSolver.UI
 
             Console.WriteLine("Button Clicked! Process will now begin!");
             var solverAccounts = await _solverManager.GetAllSolversAsync();
-            int courseId = 1372;
+            int courseId = 1302;
 
             var solvers = new List<StandardSolver>(solverAccounts.Count);
             foreach (var account in solverAccounts)

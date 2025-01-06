@@ -8,6 +8,12 @@ namespace ProblemSolver.Logic.DlServices.Implementations
 {
     public class TaskLinkExtractor : ITaskLinkExtractor
     {
+        /// <summary>
+        ///     Get's all the tasks' links from course.
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <param name="client"></param>
+        /// <returns></returns>
         public async Task<OneOf<List<TaskLink>, Failed>> ExtractFromCourseAsync(long courseId, HttpClient client)
         {
             var treeTaskResponse = await client.GetAsync($"tasktree.jsp?cid={courseId}");

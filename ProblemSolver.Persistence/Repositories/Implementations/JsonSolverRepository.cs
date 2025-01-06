@@ -6,6 +6,10 @@ using ProblemSolver.Shared.DL.Models;
 
 namespace ProblemSolver.Persistence.Repositories.Implementations
 {
+    /// <summary>
+    ///     Straightforward repository for json file
+    /// </summary>
+    //TODO: Use a database for storing accounts.
     public class JsonSolverRepository : ISolverRepository
     {
         private readonly BotStorageConfig _config;

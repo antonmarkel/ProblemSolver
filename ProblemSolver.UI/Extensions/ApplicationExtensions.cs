@@ -19,7 +19,7 @@ public static class ApplicationExtensions
     {
         return services.AddScoped<ICodeExtractor, StandardExtractor>()
             .AddScoped<IMessageConstructor, StandardMessageConstructor>()
-            .AddScoped<IBotService, BotService>()
+            .AddScoped<IAiService, AiService>()
             .AddSingleton<SolutionQueue>();
     }
 

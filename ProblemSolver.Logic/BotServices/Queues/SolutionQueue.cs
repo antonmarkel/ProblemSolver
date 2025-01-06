@@ -7,21 +7,25 @@ using ProblemSolver.Shared.Bot.Dtos.Requests;
 
 namespace ProblemSolver.Logic.BotServices.Queues
 {
+    /// <summary>
+    ///     Main processing class, responsible for getting an answer from ai and send it back to solvers
+    /// </summary>
+    //TODO: I guess we should abstract this a little, and make not just for getting solution for tasks, but also make requests of any kind.
     public class SolutionQueue
     {
         private readonly SolutionQueueConfig _queueConfig;
-        private readonly IBotService _botService;
+        private readonly IAiService _aiService;
         private readonly ICodeExtractor _codeExtractor;
         private List<Task> Tasks { get; }
         private ConcurrentQueue<(Action<string>, SolutionRequest)> _queue;
 
         private bool _stopped = true;
 
-        public SolutionQueue(IOptions<SolutionQueueConfig> queueConfig, IBotService botService,
+        public SolutionQueue(IOptions<SolutionQueueConfig> queueConfig, IAiService aiService,
             ICodeExtractor codeExtractor)
         {
             _queueConfig = queueConfig.Value;
-            _botService = botService;
+            _aiService = aiService;
             _codeExtractor = codeExtractor;
 
             Tasks = new List<Task>(_queueConfig.DegreeOfParallelism);
@@ -43,17 +47,13 @@ namespace ProblemSolver.Logic.BotServices.Queues
 
         }
 
-        public void Finish()
-        {
-            _stopped = true;
-        }
-
         public async Task ProcessQueueAsync()
         {
             while (!_stopped)
             {
                 for (int i = 0; i < Tasks.Count; i++)
-                    if (Tasks[i].IsCompleted)
+                    if (Tasks[i]
+                        .IsCompleted) //TODO: maybe use SemaphoreSlim for this. Now just using list for simplicity
                         if (_queue.TryDequeue(out var queueItem))
                         {
                             Tasks[i] = ProcessQueueItemAsync(queueItem);
@@ -72,7 +72,7 @@ namespace ProblemSolver.Logic.BotServices.Queues
                 var request = queueItem.request;
 
                 Console.WriteLine("Adding task to solutions");
-                var result = await _botService.ProcessRequestAsync(request);
+                var result = await _aiService.ProcessRequestAsync(request);
 
                 if (result.IsT0)
                 {

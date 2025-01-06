@@ -8,6 +8,12 @@ namespace ProblemSolver.Logic.Helpers
 {
     public static class TextExtractor
     {
+        /// <summary>
+        ///     Extracts text from web-page excluding styles/scripts/tags.
+        /// </summary>
+        /// <param name="link"></param>
+        /// <param name="client"></param>
+        /// <returns></returns>
         public static async Task<TaskInfo> ProcessTaskAsync(TaskLink link, HttpClient client)
         {
             var htmlContentResult = await ExtractHtmlContentAsync(link.Url, client);

@@ -1,20 +1,21 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Net.WebSockets;
+using System.Text;
+using System.Text.Json;
+using Microsoft.Extensions.Options;
 using OneOf;
 using ProblemSolver.Configuration.Bot;
 using ProblemSolver.Logic.BotServices.Interfaces;
 using ProblemSolver.Logic.Results;
 using ProblemSolver.Shared.Bot.Dtos.Requests;
-using System.Net.WebSockets;
-using System.Text;
-using System.Text.Json;
+
 namespace ProblemSolver.Logic.BotServices.Implementations
 {
-    public class BotService : IBotService
+    public class AiService : IAiService
     {
 
         private readonly BotConnectionConfig _connectionConfig;
 
-        public BotService(IOptions<BotConnectionConfig> connectionConfig)
+        public AiService(IOptions<BotConnectionConfig> connectionConfig)
         {
             _connectionConfig = connectionConfig.Value;
         }
@@ -23,7 +24,6 @@ namespace ProblemSolver.Logic.BotServices.Implementations
         {
             string response = string.Empty;
             using var webSocket = new ClientWebSocket();
-
             try
             {
                 var connection = CreateWebSocketUri();
@@ -71,7 +71,7 @@ namespace ProblemSolver.Logic.BotServices.Implementations
         {
             string clientId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
             string webSocketUrl =
-                $"{_connectionConfig.ConnectionString}/{clientId}"; // Replace [hostname] with the actual hostname
+                $"{_connectionConfig.ConnectionString}/{clientId}";
 
             return new Uri(webSocketUrl);
         }

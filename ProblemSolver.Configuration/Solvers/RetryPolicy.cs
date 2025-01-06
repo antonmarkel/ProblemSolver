@@ -2,5 +2,6 @@
 
 public class RetryPolicy
 {
+    //Number of retries to solve task
     public short MaximumNumberOfAttempts { get; set; }
 }

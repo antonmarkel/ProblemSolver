@@ -70,6 +70,11 @@ public class StandardSolver : ISolver
         return _taskStates;
     }
 
+    /// <summary>
+    ///     Communicating with SolutionQueue to send task to solution
+    /// </summary>
+    /// <param name="task"></param>
+    /// <param name="additionalProps"></param>
     private void SendTaskToSolve(TaskInfo task, string[]? additionalProps = null)
     {
         short attempt = _taskRetries[task.TaskId];
@@ -98,7 +103,7 @@ public class StandardSolver : ISolver
                 TaskId = task.TaskId,
                 SolutionName = $"{task.TaskId}_{attempt}"
             });
-
+            //Create two same objects because of concurrent issues
             _checkingQueue.Enqueue(new TaskSolution(response, _account.Language)
             {
                 CourseId = task.CourseId,
@@ -108,6 +113,11 @@ public class StandardSolver : ISolver
         });
     }
 
+    /// <summary>
+    ///     Handles the situation where task wasn't solved
+    /// </summary>
+    /// <param name="solution"></param>
+    /// <param name="verdict"></param>
     private void ResendTaskToSolve(TaskSolution solution, SolutionVerdict verdict)
     {
         Console.WriteLine(
@@ -127,7 +137,7 @@ public class StandardSolver : ISolver
             $"You've already tried to solve this task, but something went wrong, here's the code you've sent\n:{solution.Code}";
         string verdictProp =
             $"The testing system has given the following result.{verdict.Verdict}. It may be useful for you. Again you need to send me only code!";
-
+        //TODO: Add info from test.
         var taskInfo = _currentTasks.FirstOrDefault(t => t.TaskId == solution.TaskId);
 
         if (taskInfo != null)
@@ -145,6 +155,7 @@ public class StandardSolver : ISolver
                     await _taskSender.SendToCheckAsync(solution, HttpClient,
                         $"{_account.Name}");
                     Console.WriteLine($"Solution to {solution.TaskId} was sent!");
+                    //Must wait, cause otherwise dl won't allow to send the next task for checking
                     await Task.Delay(10000);
                 }
 
@@ -158,6 +169,9 @@ public class StandardSolver : ISolver
         Console.WriteLine("Finished sending cycle!");
     }
 
+    /// <summary>
+    ///     Checks whether all tasks are solved or tried to be solved the maximum number of times
+    /// </summary>
     private void FinishIfReady()
     {
         bool finish = true;

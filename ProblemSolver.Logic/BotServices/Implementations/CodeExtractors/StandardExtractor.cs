@@ -3,6 +3,9 @@ using ProblemSolver.Logic.BotServices.Interfaces;
 
 namespace ProblemSolver.Logic.BotServices.Implementations.CodeExtractors
 {
+    /// <summary>
+    ///     Used with current prompts where code is between '''
+    /// </summary>
     public class StandardExtractor : ICodeExtractor
     {
         public string ExtractCode(string data)

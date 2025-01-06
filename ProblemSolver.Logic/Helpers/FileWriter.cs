@@ -1,5 +1,8 @@
 ﻿namespace ProblemSolver.Logic.Helpers;
 
+/// <summary>
+///     Just for an easy way of saving any data to files.
+/// </summary>
 public static class FileWriter
 {
     public static async Task WriteToFileAsync(string folder, string fileName, string content)

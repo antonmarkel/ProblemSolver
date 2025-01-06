@@ -28,6 +28,7 @@ public class RegisterService : IRegisterService
 
         string response = await loginResponse.Content.ReadAsStringAsync();
 
+        //If registration is successful the response contains a hidden input with a new id for DL.
         var match = Regex.Match(response, @"<input\s+type=hidden\s+name=""id""\s+value=""(\d+)""",
             RegexOptions.IgnoreCase);
 
@@ -47,6 +48,10 @@ public class RegisterService : IRegisterService
         return new Failed();
     }
 
+    /// <summary>
+    ///     It's static data that always same, but we need to send it.
+    /// </summary>
+    /// <returns></returns>
     private static Dictionary<string, string> InitializeBaseRegisterFormData()
     {
         return new Dictionary<string, string>

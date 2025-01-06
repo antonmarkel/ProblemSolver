@@ -6,6 +6,9 @@ using ProblemSolver.Shared.Solvers;
 
 namespace ProblemSolver.Logic.SolverServices.Interfaces
 {
+    /// <summary>
+    ///     For managing solvers
+    /// </summary>
     public interface ISolverManager
     {
         Task<OneOf<Success, Failed>> AddSolverAccountAsync(SolverSettings settings, HttpClient client);

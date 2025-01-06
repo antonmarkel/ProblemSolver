@@ -13,6 +13,7 @@ public partial class App : Application
 {
     public IHost AppHost { get; }
 
+    //Register DI;
     public App()
     {
         AppHost = Host.CreateDefaultBuilder()
