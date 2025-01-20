@@ -26,6 +26,8 @@ public class RegisterService : IRegisterService
         var content = new FormUrlEncodedContent(formFields);
         var loginResponse = await client.PostAsync("regandedit/iform.jsp?lng=en", content);
 
+        loginResponse.Content.Headers.ContentType.CharSet = "utf-8";
+
         string response = await loginResponse.Content.ReadAsStringAsync();
 
         //If registration is successful the response contains a hidden input with a new id for DL.

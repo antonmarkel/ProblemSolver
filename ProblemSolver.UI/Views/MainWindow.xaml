@@ -5,38 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProblemSolver.UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="830"
+        Title="Main Window" Height="450" Width="730"
         ResizeMode="NoResize">
 
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <ListView ItemsSource="{Binding Configurations}" SelectedItem="{Binding SelectedConfig}" Margin="10">
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Visible" Grid.Row="0">
+            <ListView ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" Margin="10">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Model" DisplayMemberBinding="{Binding NeuralNetworkModel}" Width="200"/>
+                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                        <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Id}" Width="100"/>
                         <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Language}" Width="150"/>
-                        <GridViewColumn Header="Task ID" DisplayMemberBinding="{Binding TaskId}" Width="150"/>
-                        <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
-                        <GridViewColumn>
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Content="Start"
-                                            Command="{Binding DataContext.StartConfigCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
-                                            CommandParameter="{Binding}"
-                                            IsEnabled="{Binding CanStart}"
-                                            Width="100"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                        <GridViewColumn Header="Ai model" DisplayMemberBinding="{Binding Bot}" Width="200"/>
                     </GridView>
                 </ListView.View>
             </ListView>
         </ScrollViewer>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
-            <Button Content="Create" Command="{Binding AddConfigCommand}" Margin="5"/>
-            <Button Content="Check" Command="{Binding EditConfigCommand}" Margin="5"/>
-            <Button Content="Remove" Command="{Binding RemoveConfigCommand}" Margin="5"/>
-            <Button Content="Start all" Command="{Binding StartAllConfigCommand}" Margin="5"/>
+        
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Row="1">
+            <Button Content="Add" Command="{Binding AddAccountCommand}" Margin="5"/>
+            <Button Content="Edit" Command="{Binding EditAccountCommand}" Margin="5"/>
+            <Button Content="Remove" Command="{Binding RemoveAccountCommand}" Margin="5"/>
+            <Button Content="Refresh" Command="{Binding RefreshAccountsCommand}" Margin="5"/>
         </StackPanel>
     </Grid>
 </Window>

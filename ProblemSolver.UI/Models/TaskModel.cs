@@ -4,31 +4,8 @@ using System.Runtime.CompilerServices;
 
 public class TaskModel : INotifyPropertyChanged
 {
-    private string _name;
-    private string _description;
+    public long Id { get; private set; }
     private TaskState _status;
-
-    public string Name
-    {
-        get => _name;
-        set
-        {
-            _name = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string Description
-    {
-        get => _description;
-        set
-        {
-            _description = value;
-            OnPropertyChanged();
-        }
-    }
-
-    //TODO Create StatusEnum
 
     public TaskState Status
     {

@@ -3,9 +3,9 @@ using System.Windows;
 
 namespace ProblemSolver.UI.Views
 {
-    public partial class CheckConfigWindow : Window
+    public partial class EditAccountWindow : Window
     {
-        public CheckConfigWindow()
+        public EditAccountWindow()
         {
             InitializeComponent();
         }

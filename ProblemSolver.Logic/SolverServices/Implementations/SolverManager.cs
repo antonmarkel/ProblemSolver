@@ -43,8 +43,25 @@ public class SolverManager : ISolverManager
         return new Success();
     }
 
+    public async Task<OneOf<Success,Failed>> RemoveSolverAccountAsync(SolverAccount account)
+    {
+        await _solverRepository.RemoveAccountAsync(account.Id);
+        return new Success();
+    }
+
+    public async Task<OneOf<Success,Failed>> UpdateSolverAccountAsync(SolverAccount account)
+    {
+        await _solverRepository.UpdateAccountAsync(account);
+        return new Success();
+    }
+
     public async Task<List<SolverAccount>> GetAllSolversAsync()
     {
         return await _solverRepository.GetAllAccountsAsync();
+    }
+
+    public List<SolverAccount> GetAllSolversSync()
+    {
+        return _solverRepository.GetAllAccountsSync();
     }
 }

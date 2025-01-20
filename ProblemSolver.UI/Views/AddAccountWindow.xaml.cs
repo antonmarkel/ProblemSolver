@@ -2,9 +2,9 @@
 
 namespace ProblemSolver.UI.Views
 {
-    public partial class AddConfigWindow : Window
+    public partial class AddAccountWindow : Window
     {
-        public AddConfigWindow()
+        public AddAccountWindow()
         {
             InitializeComponent();
         }

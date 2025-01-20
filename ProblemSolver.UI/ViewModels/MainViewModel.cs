@@ -1,217 +1,180 @@
-﻿using Newtonsoft.Json;
-using ProblemSolver.UI.Views;
-using System.Collections.ObjectModel;
+﻿using ProblemSolver.UI.Views;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using System.IO;
-using ProblemSolver.Shared.Tasks.Enums;
 using ProblemSolver.Logic.SolverServices.Interfaces;
+using ProblemSolver.Logic.BotServices.Queues;
+using ProblemSolver.Logic.DlServices.Interfaces;
+using ProblemSolver.Logic.SolverServices.Implementations;
+using ProblemSolver.Shared.DL.Models;
+using ProblemSolver.Shared.Solvers;
+using ProblemSolver.UI.ViewModels;
 
 public class MainViewModel : INotifyPropertyChanged
 {
-    private ConfigModel _selectedConfig;
+    private SolverAccount _selectedSolver;
 
-    public ObservableCollection<ConfigModel> Configurations { get; set; }
-    public ConfigModel SelectedConfig
-    {
-        get => _selectedConfig;
+    private readonly ISolverManager _solverManager;
+    private readonly ITaskExtractor _taskExtractor;
+    private readonly ILoginService _loginService;
+    private readonly ISolverFactory<StandardSolver> _solverFactory;
+    private readonly IDlClientFactory _clientFactory;
+    private readonly ICourseSubscriptionService _courseSubscriptionService;
+    private readonly SolutionQueue _queue;
+
+    private bool _canAddAccount = true;
+    private bool _canEditAccount = true;
+    private bool _canRemoveAccount = true;
+
+    public bool CanAddAccount
+    { 
+        get => _canAddAccount;
         set
         {
-            _selectedConfig = value;
-            OnPropertyChanged();
-            CheckAllTasksStatus();
+            _canAddAccount = value;
+            OnPropertyChanged(nameof(CanAddAccount));
+            ((RelayCommand)AddAccountCommand).RaiseCanExecuteChanged();
         }
     }
 
-    public ICommand AddConfigCommand { get; }
-    public ICommand EditConfigCommand { get; }
-    public ICommand RemoveConfigCommand { get; }
-    public ICommand StartConfigCommand { get; }
-    public ICommand StartAllConfigCommand { get; }
-
-    public MainViewModel()
+    public bool CanEditAccount
     {
-        // TODO: Replace List of congigurations with repository
-        Configurations = new ObservableCollection<ConfigModel>();
-
-        AddConfigCommand = new RelayCommand(_ => AddConfig());
-        EditConfigCommand = new RelayCommand(_ => CheckConfig(), _ => SelectedConfig != null);
-        RemoveConfigCommand = new RelayCommand(_ => RemoveConfig(), _ => SelectedConfig != null);
-        StartConfigCommand = new RelayCommand(parameter => StartConfig(parameter), parameter => CanExecuteStartConfig(parameter));
-        StartAllConfigCommand = new RelayCommand(_ => StartAllConfigs(), _ => CanExecuteStartAllConfig());
-    }
-
-    private void AddConfig()
-    {
-        var newConfig = new ConfigModel();
-        AddConfigWindow(newConfig);
-        SaveConfigurations();
-    }
-
-    private void CheckConfig()
-    {
-        CheckConfigWindow(SelectedConfig);
-        SaveConfigurations();
-    }
-
-    private void RemoveConfig()
-    {
-        Configurations.Remove(SelectedConfig);
-        SaveConfigurations();
-    }
-
-    private async void StartConfig(object parameter)
-    {
-        if (parameter is ConfigModel config)
+        get => _canEditAccount;
+        set
         {
-            if (config.Status != ConfigStatusEnum.InProgress)
-            {
-
-                config.Status = ConfigStatusEnum.InProgress;
-                config.CanStart = false;
-
-                ((RelayCommand)StartConfigCommand).RaiseCanExecuteChanged();
-
-                //var tasksFromBackend = await _backendService.GetTasksAsync(SelectedConfig.TaskId);
-
-                var tasksFromBackend = new List<TaskModel>
-                {
-                new TaskModel(){Description="desc1", Name="name1", Status=TaskState.Awaiting },
-                new TaskModel(){Description="desc2", Name="name2", Status=TaskState.Awaiting },
-                new TaskModel(){Description="desc3", Name="name3", Status=TaskState.Awaiting },
-                new TaskModel(){Description="desc4", Name="name4", Status=TaskState.Awaiting },
-                new TaskModel(){Description="desc5", Name="name5", Status=TaskState.Awaiting }
-                };
-
-                config.Tasks.Clear();
-
-                foreach (var task in tasksFromBackend)
-                {
-                    config.Tasks.Add(task);
-                }
-
-                Console.WriteLine($"Tasks added (taskID = {config.TaskId})");
-
-                await Task.Delay(5000);
-
-
-                foreach (var task in config.Tasks)
-                {
-                    //var result = await _backendService.ProcessTaskAsync(task, SelectedConfig.Language);
-                    task.Status = TaskState.Solved;
-                    await Task.Delay(1000);
-                }
-
-                UpdateConfigStatus(config);
-            }
+            _canEditAccount = value;
+            OnPropertyChanged(nameof(CanAddAccount));
+            ((RelayCommand)EditAccountCommand).RaiseCanExecuteChanged();
         }
     }
 
-    private bool CanExecuteStartConfig(object parameter)
+    public bool CanRemoveAccount
+    {
+        get => _canRemoveAccount;
+        set
+        {
+            _canRemoveAccount = value;
+            OnPropertyChanged(nameof(CanRemoveAccount));
+            ((RelayCommand)RemoveAccountCommand).RaiseCanExecuteChanged();
+        }
+    }
+
+
+    private List<SolverAccount> _accounts;
+    public List<SolverAccount> Accounts
     { 
-        if(parameter is ConfigModel config)
+        get => _accounts;
+        set
         {
-            return config.CanStart;
-        }
-        return false;
-    }
-
-    private void StartAllConfigs()
-    {
-        foreach(var config in Configurations)
-        {
-            StartConfig(config);        
+            _accounts = value;
+            OnPropertyChanged(nameof(Accounts));
         }
     }
-
-    private bool CanExecuteStartAllConfig()
+    public SolverAccount SelectedAccount
     {
-        if (Configurations == null || Configurations.Count == 0)
+        get => _selectedSolver;
+        set
         {
-            return false;
+            _selectedSolver = value;
+            OnPropertyChanged();
         }
+    }
 
-        foreach(var config in Configurations)
+    public ICommand AddAccountCommand { get; }
+    public ICommand EditAccountCommand { get; }
+    public ICommand RemoveAccountCommand { get; }
+    public ICommand RefreshAccountsCommand { get;}
+
+    public MainViewModel(ISolverManager solverManager, ITaskExtractor taskExtractor, ILoginService loginService,
+            ISolverFactory<StandardSolver> solverFactory, IDlClientFactory clientFactory, ICourseSubscriptionService courseSubscriptionService, SolutionQueue queue)
+    {
+        _solverManager = solverManager;
+        _taskExtractor = taskExtractor;
+        _loginService = loginService;
+        _solverFactory = solverFactory;
+        _clientFactory = clientFactory;
+        _courseSubscriptionService = courseSubscriptionService;
+        _queue = queue;
+
+        Accounts = _solverManager.GetAllSolversSync();
+
+        AddAccountCommand = new RelayCommand(async _ => await AddAccount(), _ => CanAddAccount);
+        EditAccountCommand = new RelayCommand(async _ => await EditAccount(), _ => SelectedAccount != null && CanEditAccount);
+        RemoveAccountCommand = new RelayCommand(async _ => await RemoveAccount(), _ => SelectedAccount != null && CanRemoveAccount);
+        RefreshAccountsCommand = new RelayCommand(async _ => await  RefreshAccounts());
+    }
+
+    public async Task RefreshAccounts()
+    {
+        Accounts = await _solverManager.GetAllSolversAsync();
+        OnPropertyChanged(nameof(Accounts));
+    }
+
+    public async Task AddAccount()
+    {
+        CanAddAccount = false;
+
+        var addAccountWindow = new AddAccountWindow()
         {
-            if(!config.CanStart)
+            DataContext = new AddAccountViewModel()
+        };
+
+        if (addAccountWindow.ShowDialog() == true)
+        {
+            var viewModel = (AddAccountViewModel)addAccountWindow.DataContext;
+
+            var settings = new SolverSettings()
             {
-                return false;
-            }
+                AiBot = viewModel.Option.AiBot,
+                Language = viewModel.Option.Language,
+                Name = viewModel.Option.AccountName,
+            };
+            var client = _clientFactory.CreateClient();
+
+            var result = await _solverManager.AddSolverAccountAsync(settings, client);
+
+            Accounts = await _solverManager.GetAllSolversAsync();
+            OnPropertyChanged(nameof(Accounts));
         }
 
-        return true;
+        CanAddAccount = true;
     }
 
-
-    private void AddConfigWindow(ConfigModel config)
+    public async Task EditAccount()
     {
-        var configViewModel = new ConfigViewModel(config);
+        CanEditAccount = false;
 
-        var configWindow = new AddConfigWindow { DataContext = configViewModel };
-
-        configWindow.ShowDialog();
-
-        if (configWindow.DialogResult == true)
+        var editAccountWindow = new EditAccountWindow()
         {
-            if (!Configurations.Contains(config))
-            {
-                Configurations.Add(config);
-            }
-        }
-        UpdateConfigStatus(config);
-    }
+            DataContext = new EditAccountViewModel(SelectedAccount)
+        };
 
-    private void CheckConfigWindow(ConfigModel config)
-    {
-        var configViewModel = new ConfigViewModel(config);
-
-        var configWindow = new CheckConfigWindow { DataContext = configViewModel };
-
-        configWindow.ShowDialog();
-
-        UpdateConfigStatus(config);
-    }
-
-    private ObservableCollection<ConfigModel> LoadConfigurations()
-    {
-        if (File.Exists("configs.json"))
+        if (editAccountWindow.ShowDialog() == true)
         {
-            var json = File.ReadAllText("configs.json");
-            return JsonConvert.DeserializeObject<ObservableCollection<ConfigModel>>(json) ?? new ObservableCollection<ConfigModel>();
+            var viewModel = (EditAccountViewModel)editAccountWindow.DataContext;
+
+            SelectedAccount.Bot = viewModel.Option.AiBot;
+            SelectedAccount.Language = viewModel.Option.Language;
+            SelectedAccount.Name = viewModel.Option.AccountName;
+
+            await _solverManager.UpdateSolverAccountAsync(SelectedAccount);
+
+            Accounts = await _solverManager.GetAllSolversAsync();
+            OnPropertyChanged(nameof(Accounts));
         }
 
-        return new ObservableCollection<ConfigModel>();
+        CanEditAccount = true;
     }
 
-    private void SaveConfigurations()
+    public async Task RemoveAccount()
     {
-        var json = JsonConvert.SerializeObject(Configurations, Formatting.Indented);
-        File.WriteAllText("configs.json", json);
-    }
+        CanRemoveAccount = false;
 
-    private void UpdateConfigStatus(ConfigModel config)
-    {
-        if (!config.Tasks.Any())
-        {
-            config.Status = ConfigStatusEnum.Pending;
-        }
+        await _solverManager.RemoveSolverAccountAsync(SelectedAccount);
+        Accounts = await _solverManager.GetAllSolversAsync();
+        OnPropertyChanged(nameof(Accounts));
 
-        else
-        {
-            config.Status = config.Tasks.All(task => task.Status == TaskState.Solved) ? ConfigStatusEnum.Completed : ConfigStatusEnum.InProgress;
-            config.CanStart = config.Tasks.All(task => task.Status == TaskState.Solved) ? true : false;
-        }
-
-        ((RelayCommand)StartConfigCommand).RaiseCanExecuteChanged();
-        OnPropertyChanged(nameof(Configurations));
-    }
-    private void CheckAllTasksStatus()
-    {
-        foreach (var config in Configurations)
-        {
-            UpdateConfigStatus(config);
-        }
+        CanRemoveAccount = true;
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

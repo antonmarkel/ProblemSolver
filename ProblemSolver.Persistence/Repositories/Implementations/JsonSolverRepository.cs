@@ -28,11 +28,29 @@ namespace ProblemSolver.Persistence.Repositories.Implementations
             }
         }
 
+        private void EnsureFileExistsSync()
+        {
+            if (!File.Exists(_config.FilePath))
+            {
+                File.Create(_config.FilePath);
+                File.WriteAllText(Path.Combine(_config.FilePath), "[]");
+            }
+        }
+
         public async Task<List<SolverAccount>> GetAllAccountsAsync()
         {
             await EnsureFileExistsAsync();
 
             string json = await File.ReadAllTextAsync(_config.FilePath);
+
+            return JsonSerializer.Deserialize<List<SolverAccount>>(json) ?? new List<SolverAccount>();
+        }
+
+        public List<SolverAccount> GetAllAccountsSync()
+        {
+            EnsureFileExistsSync();
+
+            string json = File.ReadAllText(_config.FilePath);
 
             return JsonSerializer.Deserialize<List<SolverAccount>>(json) ?? new List<SolverAccount>();
         }

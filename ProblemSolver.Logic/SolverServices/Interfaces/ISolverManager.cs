@@ -12,6 +12,9 @@ namespace ProblemSolver.Logic.SolverServices.Interfaces
     public interface ISolverManager
     {
         Task<OneOf<Success, Failed>> AddSolverAccountAsync(SolverSettings settings, HttpClient client);
+        Task<OneOf<Success, Failed>> RemoveSolverAccountAsync(SolverAccount account);
+        Task<OneOf<Success, Failed>> UpdateSolverAccountAsync(SolverAccount account);
         Task<List<SolverAccount>> GetAllSolversAsync();
+        List<SolverAccount> GetAllSolversSync();
     }
 }

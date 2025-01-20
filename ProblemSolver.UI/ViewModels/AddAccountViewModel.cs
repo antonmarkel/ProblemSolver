@@ -1,44 +1,42 @@
 ﻿using ProblemSolver.Shared.Bot.Enums;
+using ProblemSolver.UI.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 
-public class ConfigViewModel : INotifyPropertyChanged
+public class AddAccountViewModel : INotifyPropertyChanged
 {
-    private ConfigModel _config;
-
-    public ConfigModel Config
+    private OptionModel _option;
+    public OptionModel Option
     {
-        get => _config;
+        get => _option;
         set
         {
-            _config = value;
-            OnPropertyChanged();
+            _option = value;
+            OnPropertyChanged(nameof(Option));
         }
     }
 
-    public ObservableCollection<TaskModel> Tasks { get; }
-    public ObservableCollection<BotEnum> NeuralNetworkModels { get; set; }
+    public ObservableCollection<BotEnum> AiBots { get; set; }
     public ObservableCollection<ProgrammingLanguageEnum> Languages { get; set; }
 
     public ICommand SaveCommand { get; }
     public ICommand CancelCommand { get; }
 
-    public ConfigViewModel(ConfigModel config)
+    public AddAccountViewModel()
     {
-        Config = config;
-        Tasks = config.Tasks;
+        Option = new OptionModel();
 
-        NeuralNetworkModels = new ObservableCollection<BotEnum>(Enum.GetValues(typeof(BotEnum)).Cast<BotEnum>());
+        AiBots = new ObservableCollection<BotEnum>(Enum.GetValues(typeof(BotEnum)).Cast<BotEnum>());
         Languages = new ObservableCollection<ProgrammingLanguageEnum>(Enum.GetValues(typeof(ProgrammingLanguageEnum)).Cast<ProgrammingLanguageEnum>());
 
         SaveCommand = new RelayCommand(_ => Save());
         CancelCommand = new RelayCommand(_ => Cancel());
     }
 
-    private void Save()
+    private async void Save()
     {
         var window = Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.DataContext == this);
         if (window != null)
