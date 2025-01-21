@@ -9,6 +9,8 @@ using ProblemSolver.Logic.SolverServices.Implementations;
 using ProblemSolver.Shared.DL.Models;
 using ProblemSolver.Shared.Solvers;
 using ProblemSolver.UI.ViewModels;
+using System.Windows;
+using ProblemSolver.UI.Messages;
 
 public class MainViewModel : INotifyPropertyChanged
 {
@@ -21,6 +23,7 @@ public class MainViewModel : INotifyPropertyChanged
     private readonly IDlClientFactory _clientFactory;
     private readonly ICourseSubscriptionService _courseSubscriptionService;
     private readonly SolutionQueue _queue;
+    private readonly MessageHelper _messageHelper;
 
     private bool _canAddAccount = true;
     private bool _canEditAccount = true;
@@ -86,7 +89,8 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand RefreshAccountsCommand { get;}
 
     public MainViewModel(ISolverManager solverManager, ITaskExtractor taskExtractor, ILoginService loginService,
-            ISolverFactory<StandardSolver> solverFactory, IDlClientFactory clientFactory, ICourseSubscriptionService courseSubscriptionService, SolutionQueue queue)
+            ISolverFactory<StandardSolver> solverFactory, IDlClientFactory clientFactory,
+            ICourseSubscriptionService courseSubscriptionService, SolutionQueue queue, MessageHelper messageHelper)
     {
         _solverManager = solverManager;
         _taskExtractor = taskExtractor;
@@ -95,6 +99,7 @@ public class MainViewModel : INotifyPropertyChanged
         _clientFactory = clientFactory;
         _courseSubscriptionService = courseSubscriptionService;
         _queue = queue;
+        _messageHelper = messageHelper;
 
         Accounts = _solverManager.GetAllSolversSync();
 
@@ -133,6 +138,11 @@ public class MainViewModel : INotifyPropertyChanged
 
             var result = await _solverManager.AddSolverAccountAsync(settings, client);
 
+            if (result.IsT1)
+            {
+                _messageHelper.ShowIncorrectAccountDataMessage();
+            }
+
             Accounts = await _solverManager.GetAllSolversAsync();
             OnPropertyChanged(nameof(Accounts));
         }
@@ -157,7 +167,12 @@ public class MainViewModel : INotifyPropertyChanged
             SelectedAccount.Language = viewModel.Option.Language;
             SelectedAccount.Name = viewModel.Option.AccountName;
 
-            await _solverManager.UpdateSolverAccountAsync(SelectedAccount);
+            var result = await _solverManager.UpdateSolverAccountAsync(SelectedAccount);
+
+            if (result.IsT1)
+            {
+                _messageHelper.ShowIncorrectAccountDataMessage();
+            }
 
             Accounts = await _solverManager.GetAllSolversAsync();
             OnPropertyChanged(nameof(Accounts));
@@ -170,7 +185,11 @@ public class MainViewModel : INotifyPropertyChanged
     {
         CanRemoveAccount = false;
 
-        await _solverManager.RemoveSolverAccountAsync(SelectedAccount);
+        var result = await _solverManager.RemoveSolverAccountAsync(SelectedAccount);
+        if (result.IsT1)
+        {
+            _messageHelper.ShowRemoveAccountErrorMessage();
+        }
         Accounts = await _solverManager.GetAllSolversAsync();
         OnPropertyChanged(nameof(Accounts));
 

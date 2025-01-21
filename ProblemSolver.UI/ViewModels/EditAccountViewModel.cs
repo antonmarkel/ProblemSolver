@@ -44,7 +44,7 @@ namespace ProblemSolver.UI.ViewModels
             CancelCommand = new RelayCommand(_ => Cancel());
         }
 
-        private async void Save()
+        private void Save()
         {
             var window = Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.DataContext == this);
             if (window != null)

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProblemSolver.UI.Views"
         mc:Ignorable="d"
-        Title="Add Account" Height="350" Width="800"
+        Title="Add Account" Height="400" Width="800"
         MinHeight="400"
         MinWidth="800">
     <Grid>

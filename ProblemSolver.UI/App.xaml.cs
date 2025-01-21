@@ -39,6 +39,7 @@ public partial class App : Application
                     .AddBotServices()
                     .AddDlServices()
                     .AddSolvers()
+                    .AddHelpers()
                     .AddTransient<MainWindow>();
             })
             .Build();

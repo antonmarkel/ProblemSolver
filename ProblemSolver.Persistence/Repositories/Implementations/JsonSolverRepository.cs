@@ -30,9 +30,13 @@ namespace ProblemSolver.Persistence.Repositories.Implementations
 
         private void EnsureFileExistsSync()
         {
-            if (!File.Exists(_config.FilePath))
+            if (!File.Exists(_config.FilePath) || string.IsNullOrEmpty(File.ReadAllText(_config.FilePath)))
             {
-                File.Create(_config.FilePath);
+                using (FileStream fs = File.Create(_config.FilePath))
+                {
+                   
+                }
+
                 File.WriteAllText(Path.Combine(_config.FilePath), "[]");
             }
         }

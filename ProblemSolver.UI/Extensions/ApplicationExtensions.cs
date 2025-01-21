@@ -10,6 +10,7 @@ using ProblemSolver.Logic.SolverServices.Implementations;
 using ProblemSolver.Logic.SolverServices.Interfaces;
 using ProblemSolver.Persistence.Repositories.Implementations;
 using ProblemSolver.Persistence.Repositories.Interfaces;
+using ProblemSolver.UI.Messages;
 
 namespace ProblemSolver.UI.Extensions;
 
@@ -45,5 +46,10 @@ public static class ApplicationExtensions
     public static IServiceCollection AddPersistence(this IServiceCollection services)
     {
         return services.AddScoped<ISolverRepository, JsonSolverRepository>();
+    }
+
+    public static IServiceCollection AddHelpers(this IServiceCollection services)
+    {
+        return services.AddTransient<MessageHelper>();
     }
 }
