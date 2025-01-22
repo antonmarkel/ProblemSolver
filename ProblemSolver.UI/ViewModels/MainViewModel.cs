@@ -9,8 +9,11 @@ using ProblemSolver.Logic.SolverServices.Implementations;
 using ProblemSolver.Shared.DL.Models;
 using ProblemSolver.Shared.Solvers;
 using ProblemSolver.UI.ViewModels;
-using System.Windows;
 using ProblemSolver.UI.Messages;
+using System.Text;
+using System.Windows.Controls;
+using ProblemSolver.Shared.Tasks;
+using System.Collections.Immutable;
 
 public class MainViewModel : INotifyPropertyChanged
 {
@@ -28,6 +31,12 @@ public class MainViewModel : INotifyPropertyChanged
     private bool _canAddAccount = true;
     private bool _canEditAccount = true;
     private bool _canRemoveAccount = true;
+    private bool _canRefreshAccounts = true;
+    private bool _canStartSolving = true;
+
+    //WARNING SHIT CODE
+    private Dictionary<long, long> testTasks;
+    //WARING SHIT CODE
 
     public bool CanAddAccount
     { 
@@ -62,6 +71,28 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
+    public bool CanRefreshAccounts
+    {
+        get => _canRefreshAccounts;
+        set
+        {
+            _canRefreshAccounts = value;
+            OnPropertyChanged(nameof(CanRefreshAccounts));
+            ((RelayCommand)RefreshAccountsCommand).RaiseCanExecuteChanged();
+        }
+    }
+
+    public bool CanStartSolving
+    {
+        get => _canStartSolving;
+        set
+        {
+            _canStartSolving = value;
+            OnPropertyChanged(nameof(CanStartSolving));
+            ((RelayCommand)StartSolvingCommand).RaiseCanExecuteChanged();  
+        }
+    }
+
 
     private List<SolverAccount> _accounts;
     public List<SolverAccount> Accounts
@@ -86,7 +117,8 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand AddAccountCommand { get; }
     public ICommand EditAccountCommand { get; }
     public ICommand RemoveAccountCommand { get; }
-    public ICommand RefreshAccountsCommand { get;}
+    public ICommand RefreshAccountsCommand { get; }
+    public ICommand StartSolvingCommand { get; }
 
     public MainViewModel(ISolverManager solverManager, ITaskExtractor taskExtractor, ILoginService loginService,
             ISolverFactory<StandardSolver> solverFactory, IDlClientFactory clientFactory,
@@ -107,12 +139,17 @@ public class MainViewModel : INotifyPropertyChanged
         EditAccountCommand = new RelayCommand(async _ => await EditAccount(), _ => SelectedAccount != null && CanEditAccount);
         RemoveAccountCommand = new RelayCommand(async _ => await RemoveAccount(), _ => SelectedAccount != null && CanRemoveAccount);
         RefreshAccountsCommand = new RelayCommand(async _ => await  RefreshAccounts());
+        StartSolvingCommand = new RelayCommand(async _ => await StartSolving(), _ => CanStartSolving);
     }
 
     public async Task RefreshAccounts()
     {
+        CanRefreshAccounts = false;
+
         Accounts = await _solverManager.GetAllSolversAsync();
         OnPropertyChanged(nameof(Accounts));
+
+        CanRefreshAccounts = true;
     }
 
     public async Task AddAccount()
@@ -194,6 +231,62 @@ public class MainViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(Accounts));
 
         CanRemoveAccount = true;
+    }
+
+    public async Task StartSolving()
+    {
+
+        CanStartSolving = false;
+
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        int courseId = 1302;
+        Console.WriteLine("Button CLICKED");
+        var solvers = new List<StandardSolver>(Accounts.Count);
+        foreach (var account in Accounts)
+        {
+            var solver = _solverFactory.CreateSolver(account);
+            var loginResult = await _loginService.LoginAsync(account, solver.HttpClient);
+            if (loginResult.IsT1)
+            {
+                Console.WriteLine("Error while trying to login");
+                _messageHelper.ShowLoginSolverErrorMessage();
+                continue;
+            }
+            else
+            {
+                var courseResult = await _courseSubscriptionService.
+                    EnsureSubscriptionToCourseAsync(courseId, solver.HttpClient);
+                if (courseResult.IsT1)
+                {
+                    _messageHelper.ShowCourseSubscribeErrorMessage();
+                    continue;
+                }
+                solvers.Add(solver);
+            }
+        }
+
+        var tasksResult = await _taskExtractor.ExtractTasksAsync(courseId, solvers[0].HttpClient);
+
+        var tasks = tasksResult.AsT0;
+        var count = 0;
+
+        foreach(var solver in solvers)
+        {
+            count++;
+            var copiedTasks = new List<TaskInfo?>(tasks.Count);
+            foreach(var task in tasks) { copiedTasks.Add(task); }
+            Console.WriteLine($"Starting Solving! Solver number - {count}");
+            var myTasks = await solver.SolveAsync(copiedTasks.ToImmutableList()!);
+            
+            foreach(var o in myTasks)
+            {
+                Console.WriteLine($"{o.Key} --- {o.Value}");
+            }
+        }
+
+        _queue.Start();
+
+        CanStartSolving = true;
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

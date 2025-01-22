@@ -1,6 +1,10 @@
-﻿namespace ProblemSolver.Logic.DlServices.Interfaces;
+﻿using OneOf;
+using OneOf.Types;
+using ProblemSolver.Logic.Results;
+
+namespace ProblemSolver.Logic.DlServices.Interfaces;
 
 public interface ICourseSubscriptionService
 {
-    Task EnsureSubscriptionToCourseAsync(long courseId, HttpClient client);
+    Task<OneOf<Success,Failed>> EnsureSubscriptionToCourseAsync(long courseId, HttpClient client);
 }

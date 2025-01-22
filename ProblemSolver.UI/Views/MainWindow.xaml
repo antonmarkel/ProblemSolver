@@ -28,11 +28,12 @@
             </ListView>
         </ScrollViewer>
         
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Row="1">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1">
             <Button Content="Add" Command="{Binding AddAccountCommand}" Margin="5"/>
             <Button Content="Edit" Command="{Binding EditAccountCommand}" Margin="5"/>
             <Button Content="Remove" Command="{Binding RemoveAccountCommand}" Margin="5"/>
             <Button Content="Refresh" Command="{Binding RefreshAccountsCommand}" Margin="5"/>
+            <Button Content="Start" Command="{Binding StartSolvingCommand}" Margin="5"/>
         </StackPanel>
     </Grid>
 </Window>
