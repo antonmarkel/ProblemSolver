@@ -254,8 +254,6 @@ public class MainViewModel : INotifyPropertyChanged
             return;
         }
 
-        AreSolutionsAdded = true;
-
         Console.WriteLine("STARTING...");
         var solvers = new List<StandardSolver>(Accounts.Count);
         foreach (var account in Accounts)
