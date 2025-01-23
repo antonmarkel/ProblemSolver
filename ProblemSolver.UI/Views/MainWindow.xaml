@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProblemSolver.UI"
         mc:Ignorable="d"
-        Title="Main Window" Height="450" Width="730"
-        ResizeMode="NoResize">
+        Title="Main Window" Height="450" Width="925"
+        ResizeMode="CanResize">
 
     <TabControl>
 
@@ -26,6 +26,7 @@
                                 <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Id}" Width="100"/>
                                 <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Language}" Width="150"/>
                                 <GridViewColumn Header="Ai model" DisplayMemberBinding="{Binding Bot}" Width="200"/>
+                                <GridViewColumn Header="Compiler" DisplayMemberBinding="{Binding Compiler}" Width="200"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -45,35 +46,33 @@
 
         <TabItem Header="Solutions">
             <Grid>
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <ScrollViewer HorizontalScrollBarVisibility="Visible" Grid.Row="0">
-                    <ListView ItemsSource="{Binding Solutions}" SelectedItem="{Binding SelectedSolution}" Margin="10">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Account Name" DisplayMemberBinding="{Binding AccountName}" Width="200"/>
-                                <GridViewColumn Header="State" DisplayMemberBinding="{Binding State}" Width="150"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </ScrollViewer>
+                <TreeView ItemsSource="{Binding Solutions}" Margin="10" Grid.Row="0">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Tasks}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding AccountName}" Width="200" />
+                                <TextBlock Text="{Binding State}" Width="150" />
+                            </StackPanel>
+                            <HierarchicalDataTemplate.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Key}" Width="100" />
+                                        <TextBlock Text="{Binding Value}" Width="200" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </HierarchicalDataTemplate.ItemTemplate>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
 
-                <Expander Header="Tasks" IsExpanded="True" Grid.Row="1">
-                    <ScrollViewer HorizontalScrollBarVisibility="Visible">
-                        <ListView ItemsSource="{Binding SelectedSolution.Tasks}">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Task ID" DisplayMemberBinding="{Binding Key}" Width="100"/>
-                                    <GridViewColumn Header="Task State" DisplayMemberBinding="{Binding Value}" Width="200"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                    </ScrollViewer>
-                </Expander>
+                <StackPanel Grid.Row="1">
+                    <Button Content="Refrsh states" Width="200" Command="{Binding RefreshSolutionStatesCommand}"/>
+                </StackPanel>
 
             </Grid>
         </TabItem>

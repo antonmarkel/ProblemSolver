@@ -35,7 +35,8 @@ public class SolverManager : ISolverManager
             Nick = registerInfo.Nick,
             Password = registerInfo.Password, //6bcd6e6b-bd00-4d,23c40d53-e50e-4
             Bot = settings.AiBot,
-            Language = settings.Language
+            Language = settings.Language,
+            Compiler = settings.Compiler
         };
 
         await _solverRepository.AddAccountAsync(solverAccount);

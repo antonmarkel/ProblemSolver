@@ -21,17 +21,23 @@ namespace ProblemSolver.Logic.Helpers
             return ".unknown";
         }
 
-        public static string LanguageToCompiler(ProgrammingLanguageEnum language)
+        public static string GetComplierName(CompilerEnum compiler)
         {
-            switch (language)
+            switch (compiler)
             {
-                case ProgrammingLanguageEnum.Cpp:
-                    return "g131x64";
-                case ProgrammingLanguageEnum.Python:
-                    return "py311";
-            }
-
-            return ".unknown";
+                case CompilerEnum.PY:
+                    return "PY";
+                case CompilerEnum.py37:
+                    return "py37";
+                case CompilerEnum.MVC9:
+                    return "MVC9";
+                case CompilerEnum.g53d:
+                    return "g53d";
+                case CompilerEnum.g73:
+                    return "g73";
+                default:
+                    return ".unknown";
+            }  
         }
     }
 }

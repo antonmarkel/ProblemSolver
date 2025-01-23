@@ -97,14 +97,14 @@ public class StandardSolver : ISolver
         _queue.AddTask(solutionRequest, response =>
         {
             _taskStates[task.TaskId] = TaskState.Checking;
-            _sendingQueue.Enqueue(new TaskSolution(response, _account.Language)
+            _sendingQueue.Enqueue(new TaskSolution(response, _account.Language, _account.Compiler)
             {
                 CourseId = task.CourseId,
                 TaskId = task.TaskId,
                 SolutionName = $"{task.TaskId}_{attempt}"
             });
             //Create two same objects because of concurrent issues
-            _checkingQueue.Enqueue(new TaskSolution(response, _account.Language)
+            _checkingQueue.Enqueue(new TaskSolution(response, _account.Language, _account.Compiler)
             {
                 CourseId = task.CourseId,
                 TaskId = task.TaskId,

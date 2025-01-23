@@ -21,7 +21,7 @@ namespace ProblemSolver.Logic.DlServices.Implementations
                 { new StringContent("/taskqueue.jsp"), "script" },
                 { new StringContent($"cid={solution.CourseId}&nid={solution.TaskId}"), "addparam" },
                 { new StringContent(""), "ExtChk" },
-                { new StringContent(LanguageHelper.LanguageToCompiler(solution.Language)), "language" },
+                { new StringContent(LanguageHelper.GetComplierName(solution.Compiler)), "language"},
                 { new StringContent("50"), "DelTA4 at NIT1 Win10 x64" }
             };
 

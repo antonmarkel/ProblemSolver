@@ -2,39 +2,46 @@
 using ProblemSolver.UI.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 
 public class AddAccountViewModel : INotifyPropertyChanged
 {
-    private OptionModel _option;
-    public OptionModel Option
-    {
-        get => _option;
-        set
-        {
-            _option = value;
-            OnPropertyChanged(nameof(Option));
-        }
-    }
+    public OptionModel Option { get; set; }
 
     public ObservableCollection<BotEnum> AiBots { get; set; }
     public ObservableCollection<ProgrammingLanguageEnum> Languages { get; set; }
 
-    public ICommand SaveCommand { get; }
-    public ICommand CancelCommand { get; }
+    private ObservableCollection<CompilerEnum> _compilers;
+
+    public ObservableCollection<CompilerEnum> Compilers
+    {
+        get => _compilers;
+        set
+        {
+            _compilers = value;
+            OnPropertyChanged(nameof(Compilers));
+        }
+    }
+
+    public ICommand SaveCommand { get; set; }
+    public ICommand CancelCommand { get; set; }
 
     public AddAccountViewModel()
     {
-        Option = new OptionModel();
-
         AiBots = new ObservableCollection<BotEnum>(Enum.GetValues(typeof(BotEnum)).Cast<BotEnum>());
         Languages = new ObservableCollection<ProgrammingLanguageEnum>(Enum.GetValues(typeof(ProgrammingLanguageEnum)).Cast<ProgrammingLanguageEnum>());
+        Compilers = new ObservableCollection<CompilerEnum>(Enum.GetValues(typeof(CompilerEnum)).Cast<CompilerEnum>());
 
-        SaveCommand = new RelayCommand(_ => Save());
+        Option = new OptionModel();
+
+        SaveCommand = new RelayCommand(_ => Save(), _ => CanSave());
         CancelCommand = new RelayCommand(_ => Cancel());
+
     }
+
 
     private void Save()
     {
@@ -46,6 +53,13 @@ public class AddAccountViewModel : INotifyPropertyChanged
         }
     }
 
+    private bool CanSave()
+    {
+        if (Option.AccountName == null) { return false; }
+        if (Option.Compiler == null) { return false; }
+        return true;
+    }
+
     private void Cancel()
     {
         var window = Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.DataContext == this);
@@ -55,6 +69,7 @@ public class AddAccountViewModel : INotifyPropertyChanged
             window.Close();
         }
     }
+
 
     public event PropertyChangedEventHandler PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null)

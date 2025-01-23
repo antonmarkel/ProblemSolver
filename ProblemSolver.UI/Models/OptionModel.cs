@@ -9,6 +9,7 @@ namespace ProblemSolver.UI.Models
         private string _accountName = string.Empty;
         private BotEnum _aiBot;
         private ProgrammingLanguageEnum _language;
+        private CompilerEnum _compiler;
 
         public string AccountName
         {
@@ -36,6 +37,16 @@ namespace ProblemSolver.UI.Models
             set
             {
                 _language = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CompilerEnum Compiler 
+        {
+            get => _compiler;
+            set
+            {
+                _compiler = value;
                 OnPropertyChanged();
             }
         }

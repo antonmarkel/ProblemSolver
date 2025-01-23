@@ -14,6 +14,7 @@ using ProblemSolver.Shared.Tasks;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using ProblemSolver.UI.Models;
+using System.Windows;
 
 public class MainViewModel : INotifyPropertyChanged
 {
@@ -74,10 +75,10 @@ public class MainViewModel : INotifyPropertyChanged
     private bool _canAddAccount = true;
     private bool _canRemoveAccount = true;
     private bool _canRefreshAccounts = true;
-    private bool _canStartSolving = true;
+    private bool _areSolutionsAdded = false;
 
     public bool CanAddAccount
-    { 
+    {
         get => _canAddAccount;
         set
         {
@@ -109,14 +110,13 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    public bool CanStartSolving
+    public bool AreSolutionsAdded
     {
-        get => _canStartSolving;
+        get => _areSolutionsAdded;
         set
         {
-            _canStartSolving = value;
-            OnPropertyChanged(nameof(CanStartSolving));
-            ((RelayCommand)StartSolvingCommand).RaiseCanExecuteChanged();  
+            _areSolutionsAdded = value;
+            OnPropertyChanged(nameof(AreSolutionsAdded));
         }
     }
 
@@ -135,8 +135,8 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand RemoveAccountCommand { get; }
     public ICommand RefreshAccountsCommand { get; }
     public ICommand StartSolvingCommand { get; }
-
     public ICommand ConCommand { get; }
+    public ICommand RefreshSolutionStatesCommand { get; }
 
     public MainViewModel(ISolverManager solverManager, ITaskExtractor taskExtractor, ILoginService loginService,
             ISolverFactory<StandardSolver> solverFactory, IDlClientFactory clientFactory,
@@ -157,8 +157,9 @@ public class MainViewModel : INotifyPropertyChanged
         AddAccountCommand = new RelayCommand(async _ => await AddAccount(), _ => CanAddAccount);
         RemoveAccountCommand = new RelayCommand(async _ => await RemoveAccount(), _ => SelectedAccount != null && CanRemoveAccount);
         RefreshAccountsCommand = new RelayCommand(async _ => await  RefreshAccounts());
-        StartSolvingCommand = new RelayCommand(async _ => await StartSolving(), _ => CanStartSolving);
+        StartSolvingCommand = new RelayCommand(async _ => await StartSolving(), _ => CanStartSolving() || AreSolutionsAdded);
         ConCommand = new RelayCommand(_ => Con());
+        RefreshSolutionStatesCommand = new RelayCommand(_ => RefreshSolutionStates());
     }
 
     public async Task RefreshAccounts()
@@ -169,6 +170,23 @@ public class MainViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(Accounts));
 
         CanRefreshAccounts = true;
+    }
+
+    public void RefreshSolutionStates()
+    {
+        foreach (var solution in Solutions)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                OnPropertyChanged(nameof(Solutions));
+                OnPropertyChanged(nameof(SelectedSolution));
+                OnPropertyChanged(nameof(Solutions));
+                OnPropertyChanged(nameof(solution));
+                OnPropertyChanged(nameof(solution.State));
+                OnPropertyChanged(nameof(solution.Tasks));
+            });
+            Console.WriteLine("Refreshed solutions");
+        }
     }
 
     public async Task AddAccount()
@@ -189,6 +207,7 @@ public class MainViewModel : INotifyPropertyChanged
                 AiBot = viewModel.Option.AiBot,
                 Language = viewModel.Option.Language,
                 Name = viewModel.Option.AccountName,
+                Compiler = viewModel.Option.Compiler,
             };
             var client = _clientFactory.CreateClient();
 
@@ -221,11 +240,21 @@ public class MainViewModel : INotifyPropertyChanged
         CanRemoveAccount = true;
     }
 
+    private bool CanStartSolving()
+    {
+        foreach (var solution in Solutions)
+        {
+            if (solution.State == SolutionStateEnum.Solving)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public async Task StartSolving()
     {
-
-        CanStartSolving = false;
-
         Solutions = new();
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -233,11 +262,12 @@ public class MainViewModel : INotifyPropertyChanged
         if (CourseId is null)
         {
             _messageHelper.ShowEmptyCourseErrorMessage();
-            CanStartSolving = true;
             return;
         }
 
-        Console.WriteLine("Button CLICKED");
+        AreSolutionsAdded = true;
+
+        Console.WriteLine("STARTING...");
         var solvers = new List<StandardSolver>(Accounts.Count);
         foreach (var account in Accounts)
         {
@@ -255,6 +285,7 @@ public class MainViewModel : INotifyPropertyChanged
                     EnsureSubscriptionToCourseAsync(CourseId.Value, solver.HttpClient);
                 if (courseResult.IsT1)
                 {
+                    Console.WriteLine("Error while trying to subscribe to course");
                     _messageHelper.ShowCourseSubscribeErrorMessage();
                     continue;
                 }
@@ -279,17 +310,20 @@ public class MainViewModel : INotifyPropertyChanged
             
             Solutions.Add(solution);
         }
-
         _queue.Start();
-
-        CanStartSolving = true;
     }
 
     public void Con()
     {
-        foreach (var task in SelectedSolution.Tasks)
+        foreach (var solution in Solutions)
         {
-            Console.WriteLine($"{task.Key} --- {task.Value}");
+            Console.WriteLine("-----------------------------");
+            Console.WriteLine($"{solution.AccountName}");
+            foreach (var task in solution.Tasks)
+            {
+                Console.WriteLine($"{task.Key} --- {task.Value}");
+            }
+            Console.WriteLine("-----------------------------");
         }
     }
 

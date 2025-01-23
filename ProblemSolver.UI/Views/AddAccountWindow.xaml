@@ -4,18 +4,38 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProblemSolver.UI.Views"
+        xmlns:converters="clr-namespace:ProblemSolver.UI.Converters"
         mc:Ignorable="d"
-        Title="Add Account" Height="400" Width="800"
-        MinHeight="400"
+        Title="Add Account" Height="550 " Width="800" ResizeMode="CanResize"
+        MinHeight="500"
         MinWidth="800">
+
+    <Window.Resources>
+        <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+    </Window.Resources>
+
     <Grid>
         <StackPanel Margin="10">
-            <Label Content="Account name" Margin="0,0,0,5"/>
+            <Label Content="Account name:" Margin="0,0,0,5"/>
             <TextBox Text="{Binding Option.AccountName}" Height="40" Margin="0,0,0,10"/>
             <Label Content="AI Bot:" Margin="0,0,0,5"/>
             <ComboBox ItemsSource="{Binding AiBots}" SelectedItem="{Binding Option.AiBot}" Height="40" Margin="0,0,0,10"/>
             <Label Content="Language:" Margin="0,0,0,5"/>
-            <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Option.Language}" Height="40" Margin="0,0,0,10"/>
+            <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Option.Language}" Height="40" Margin="0,0,0,10">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Label Content="Compiler:" Margin="0,0,0,5"/>
+            <ComboBox ItemsSource="{Binding Compilers}" SelectedItem="{Binding Option.Compiler}" Height="40" Margin="0,0,0,10">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
                 <Button Content="Save" Command="{Binding SaveCommand}" Margin="5" Width="100"/>

@@ -8,9 +8,19 @@ namespace ProblemSolver.UI.Models
 {
     public class SolutionModel : INotifyPropertyChanged
     {
-        public string AccountName { get; set; }
+        private string _accountName;
         private SolutionStateEnum _state;
         private ConcurrentDictionary<long, TaskState> _tasks;
+
+        public string AccountName
+        {
+            get => _accountName;
+            set
+            {
+                _accountName = value;
+                OnPropertyChanged();
+            }
+        }
 
         public SolutionStateEnum State 
         { 
