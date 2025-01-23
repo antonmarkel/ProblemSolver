@@ -222,4 +222,9 @@ public class StandardSolver : ISolver
 
         Console.WriteLine("Finished checking cycle!");
     }
+
+    public string GetAccountName()
+    {
+        return _account.Name;
+    }
 }

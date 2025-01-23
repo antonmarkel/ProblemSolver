@@ -11,11 +11,13 @@ namespace ProblemSolver.UI.Messages
         private const string RemoveAccountErrorMessage = "Error occured while trying to remove account!";
 
         private const string LoginSolverErrorTitle = "Login solver error!";
-        private const string LoginSolverErrorMessage = "Error occured while trying to login solver";
+        private const string LoginSolverErrorMessage = "Error occured while trying to login solver!";
 
         private const string CourseSubscribeErrorTItle = "Course subscribe error!";
-        private const string CourseSubscribeErrorMessage = "Error occured while trying to subscribe to course";
+        private const string CourseSubscribeErrorMessage = "Error occured while trying to subscribe to course!";
 
+        private const string EmptyCourseErrorTitle = "Empty course error!";
+        private const string EmptyCourseErrorMessage = "Your course Id is empty!";
         public void ShowIncorrectAccountDataMessage()
         {
             MessageBox.Show(IncorrectAccountDataMessage, IncorrectAccountDataTitle);
@@ -34,6 +36,11 @@ namespace ProblemSolver.UI.Messages
         public void ShowCourseSubscribeErrorMessage()
         {
             MessageBox.Show(CourseSubscribeErrorMessage, CourseSubscribeErrorTItle);
+        }
+
+        public void ShowEmptyCourseErrorMessage()
+        {
+            MessageBox.Show(EmptyCourseErrorMessage, EmptyCourseErrorTitle);
         }
     }
 }

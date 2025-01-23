@@ -7,6 +7,7 @@ namespace ProblemSolver.UI.Views
         public AddAccountWindow()
         {
             InitializeComponent();
+            DataContext = new AddAccountViewModel();
         }
     }
 }

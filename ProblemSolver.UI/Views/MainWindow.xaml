@@ -8,32 +8,76 @@
         Title="Main Window" Height="450" Width="730"
         ResizeMode="NoResize">
 
-    <Grid>
-        
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <TabControl>
 
-        <ScrollViewer HorizontalScrollBarVisibility="Visible" Grid.Row="0">
-            <ListView ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" Margin="10">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
-                        <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Id}" Width="100"/>
-                        <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Language}" Width="150"/>
-                        <GridViewColumn Header="Ai model" DisplayMemberBinding="{Binding Bot}" Width="200"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </ScrollViewer>
-        
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1">
-            <Button Content="Add" Command="{Binding AddAccountCommand}" Margin="5"/>
-            <Button Content="Edit" Command="{Binding EditAccountCommand}" Margin="5"/>
-            <Button Content="Remove" Command="{Binding RemoveAccountCommand}" Margin="5"/>
-            <Button Content="Refresh" Command="{Binding RefreshAccountsCommand}" Margin="5"/>
-            <Button Content="Start" Command="{Binding StartSolvingCommand}" Margin="5"/>
-        </StackPanel>
-    </Grid>
+        <TabItem Header="Accounts">
+            <Grid>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <ScrollViewer HorizontalScrollBarVisibility="Visible" Grid.Row="0">
+                    <ListView ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" Margin="10">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                                <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Id}" Width="100"/>
+                                <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Language}" Width="150"/>
+                                <GridViewColumn Header="Ai model" DisplayMemberBinding="{Binding Bot}" Width="200"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </ScrollViewer>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1">
+                    <Button Content="Add" Command="{Binding AddAccountCommand}" Margin="5"/>
+                    <Button Content="Remove" Command="{Binding RemoveAccountCommand}" Margin="5"/>
+                    <Button Content="Refresh" Command="{Binding RefreshAccountsCommand}" Margin="5"/>
+                    <Button Content="Start" Command="{Binding StartSolvingCommand}" Margin="5"/>
+                    <Button Content="Console" Command="{Binding ConCommand}" Margin="5"/>
+                    <Label Content="Course Id"/>
+                    <TextBox Text="{Binding CourseId}" Width="75"/>
+                </StackPanel>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Solutions">
+            <Grid>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <ScrollViewer HorizontalScrollBarVisibility="Visible" Grid.Row="0">
+                    <ListView ItemsSource="{Binding Solutions}" SelectedItem="{Binding SelectedSolution}" Margin="10">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Account Name" DisplayMemberBinding="{Binding AccountName}" Width="200"/>
+                                <GridViewColumn Header="State" DisplayMemberBinding="{Binding State}" Width="150"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </ScrollViewer>
+
+                <Expander Header="Tasks" IsExpanded="True" Grid.Row="1">
+                    <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                        <ListView ItemsSource="{Binding SelectedSolution.Tasks}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Task ID" DisplayMemberBinding="{Binding Key}" Width="100"/>
+                                    <GridViewColumn Header="Task State" DisplayMemberBinding="{Binding Value}" Width="200"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </ScrollViewer>
+                </Expander>
+
+            </Grid>
+        </TabItem>
+
+    </TabControl>
+
 </Window>

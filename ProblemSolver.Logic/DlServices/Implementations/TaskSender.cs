@@ -40,6 +40,7 @@ namespace ProblemSolver.Logic.DlServices.Implementations
                 var response = await client.PostAsync("/upload", formContent);
                 response.EnsureSuccessStatusCode();
                 string responseString = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseString);
                 Console.WriteLine("Form submitted successfully!");
             }
             catch (Exception ex)
