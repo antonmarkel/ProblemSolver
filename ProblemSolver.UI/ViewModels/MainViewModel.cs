@@ -75,7 +75,6 @@ public class MainViewModel : INotifyPropertyChanged
     private bool _canAddAccount = true;
     private bool _canRemoveAccount = true;
     private bool _canRefreshAccounts = true;
-    private bool _areSolutionsAdded = false;
 
     public bool CanAddAccount
     {
@@ -107,16 +106,6 @@ public class MainViewModel : INotifyPropertyChanged
             _canRefreshAccounts = value;
             OnPropertyChanged(nameof(CanRefreshAccounts));
             ((RelayCommand)RefreshAccountsCommand).RaiseCanExecuteChanged();
-        }
-    }
-
-    public bool AreSolutionsAdded
-    {
-        get => _areSolutionsAdded;
-        set
-        {
-            _areSolutionsAdded = value;
-            OnPropertyChanged(nameof(AreSolutionsAdded));
         }
     }
 
@@ -157,7 +146,7 @@ public class MainViewModel : INotifyPropertyChanged
         AddAccountCommand = new RelayCommand(async _ => await AddAccount(), _ => CanAddAccount);
         RemoveAccountCommand = new RelayCommand(async _ => await RemoveAccount(), _ => SelectedAccount != null && CanRemoveAccount);
         RefreshAccountsCommand = new RelayCommand(async _ => await  RefreshAccounts());
-        StartSolvingCommand = new RelayCommand(async _ => await StartSolving(), _ => CanStartSolving() || AreSolutionsAdded);
+        StartSolvingCommand = new RelayCommand(async _ => await StartSolving(), _ => CanStartSolving());
         ConCommand = new RelayCommand(_ => Con());
         RefreshSolutionStatesCommand = new RelayCommand(_ => RefreshSolutionStates());
     }
