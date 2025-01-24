@@ -48,7 +48,6 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TreeView ItemsSource="{Binding Solutions}" Margin="10" Grid.Row="0">
@@ -69,11 +68,6 @@
                         </HierarchicalDataTemplate>
                     </TreeView.ItemTemplate>
                 </TreeView>
-
-                <StackPanel Grid.Row="1">
-                    <Button Content="Refrsh states" Width="200" Command="{Binding RefreshSolutionStatesCommand}"/>
-                </StackPanel>
-
             </Grid>
         </TabItem>
 

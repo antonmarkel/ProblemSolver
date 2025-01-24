@@ -227,4 +227,10 @@ public class StandardSolver : ISolver
     {
         return _account.Name;
     }
+
+    public Dictionary<long, TaskState> GetTasks()
+    {
+        var dict = _taskStates.ToDictionary(el => el.Key, el => el.Value);
+        return dict;
+    }
 }

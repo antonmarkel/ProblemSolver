@@ -10,7 +10,7 @@ namespace ProblemSolver.UI.Models
     {
         private string _accountName;
         private SolutionStateEnum _state;
-        private ConcurrentDictionary<long, TaskState> _tasks;
+        private Dictionary<long, TaskState> _tasks;
 
         public string AccountName
         {
@@ -32,7 +32,7 @@ namespace ProblemSolver.UI.Models
             }
         }
 
-        public ConcurrentDictionary<long, TaskState> Tasks
+        public Dictionary<long, TaskState> Tasks
         {
             get => _tasks;
             set
