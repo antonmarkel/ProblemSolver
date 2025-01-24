@@ -1,0 +1,17 @@
+﻿<Window x:Class="ProblemSolver.UI.Views.CompilersInfo"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Compilers" Height="350" Width="525" ResizeMode="CanResize">
+    <Grid>
+        <ListBox ItemsSource="{Binding Compilers}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Key}" FontWeight="Bold" FontSize="16"/>
+                        <TextBlock Text="{Binding Value}" Foreground="Gray" FontSize="16"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Window>

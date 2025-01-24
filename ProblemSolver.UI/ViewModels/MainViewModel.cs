@@ -16,6 +16,8 @@ using System.Collections.ObjectModel;
 using ProblemSolver.UI.Models;
 using System.Windows;
 using ProblemSolver.Shared.Tasks.Enums;
+using System.Runtime.InteropServices;
+using ProblemSolver.UI.ViewModels;
 
 public class MainViewModel : INotifyPropertyChanged
 {
@@ -138,6 +140,8 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand RemoveAccountCommand { get; }
     public ICommand RefreshAccountsCommand { get; }
     public ICommand StartSolvingCommand { get; }
+    public ICommand ToggleConsoleCommand { get; }
+    public ICommand ShowCompilersCommand { get; }
 
     public MainViewModel(ISolverManager solverManager, ITaskExtractor taskExtractor, ILoginService loginService,
             ISolverFactory<StandardSolver> solverFactory, IDlClientFactory clientFactory,
@@ -159,6 +163,11 @@ public class MainViewModel : INotifyPropertyChanged
         RemoveAccountCommand = new RelayCommand(async _ => await RemoveAccount(), _ => SelectedAccount != null && CanRemoveAccount);
         RefreshAccountsCommand = new RelayCommand(async _ => await RefreshAccounts());
         StartSolvingCommand = new RelayCommand(async _ => await StartSolving(), _ => CanStartSolving());
+        ToggleConsoleCommand = new RelayCommand(_ => ToggleConsole());
+        ShowCompilersCommand = new RelayCommand(_ => ShowCompilers());
+
+        // Because console toggles automaticly, so we need to turn it off
+        HideConsole();
 
         _updateTimer = new Timer(UpdateSolutions, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
     }
@@ -241,6 +250,15 @@ public class MainViewModel : INotifyPropertyChanged
         return true;
     }
 
+    public void ShowCompilers()
+    {
+        var compilersWindow = new CompilersInfo()
+        {
+            DataContext = new CompilersInfoViewModel()
+        };
+        compilersWindow.Show();
+    }
+
     public async Task StartSolving()
     {
         IsStartSolvingMethodCompleted = false;
@@ -252,6 +270,7 @@ public class MainViewModel : INotifyPropertyChanged
         if (CourseId is null)
         {
             _messageHelper.ShowEmptyCourseErrorMessage();
+            IsStartSolvingMethodCompleted = true;
             return;
         }
 
@@ -309,7 +328,7 @@ public class MainViewModel : INotifyPropertyChanged
         {
             var solver = Solvers.FirstOrDefault(s => s.GetAccountName() == solution.AccountName);
             var tasks = solver.GetTasks();
-            
+
 
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -329,6 +348,47 @@ public class MainViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)); 
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+
+    // CONSOLE
+    // It's shit code, because idk how to make toggle console smart
+
+    [DllImport("kernel32.dll")]
+    static extern IntPtr GetConsoleWindow();
+
+    [DllImport("user32.dll")]
+    static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
+
+    private static bool IsConsoleVisible = true;
+
+    private const int SW_HIDE = 0;
+    private const int SW_SHOW = 5;
+
+    public static void HideConsole()
+    {
+        var handle = GetConsoleWindow();
+        IsConsoleVisible = false;
+        ShowWindow(handle, SW_HIDE);
+    }
+
+    public static void ShowConsole()
+    {
+        var handle = GetConsoleWindow();
+        IsConsoleVisible = true;
+        ShowWindow(handle, SW_SHOW);
+    }
+
+    public static void ToggleConsole()
+    {
+        if (IsConsoleVisible)
+        {
+            HideConsole();
+        }
+        else
+        {
+            ShowConsole();  
+        }
     }
 }

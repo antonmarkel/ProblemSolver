@@ -20,24 +20,5 @@ namespace ProblemSolver.Logic.Helpers
 
             return ".unknown";
         }
-
-        public static string GetComplierName(CompilerEnum compiler)
-        {
-            switch (compiler)
-            {
-                case CompilerEnum.PY:
-                    return "PY";
-                case CompilerEnum.py37:
-                    return "py37";
-                case CompilerEnum.MVC9:
-                    return "MVC9";
-                case CompilerEnum.g53d:
-                    return "g53d";
-                case CompilerEnum.g73:
-                    return "g73";
-                default:
-                    return ".unknown";
-            }  
-        }
     }
 }

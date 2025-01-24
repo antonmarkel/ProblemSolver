@@ -17,11 +17,11 @@
     <Grid>
         <StackPanel Margin="10">
             <Label Content="Account name:" Margin="0,0,0,5"/>
-            <TextBox Text="{Binding Option.AccountName}" Height="40" Margin="0,0,0,10"/>
+            <TextBox Text="{Binding Option.AccountName}" Height="50" Margin="0,0,0,10"/>
             <Label Content="AI Bot:" Margin="0,0,0,5"/>
-            <ComboBox ItemsSource="{Binding AiBots}" SelectedItem="{Binding Option.AiBot}" Height="40" Margin="0,0,0,10"/>
+            <ComboBox ItemsSource="{Binding AiBots}" SelectedItem="{Binding Option.AiBot}" Height="50" Margin="0,0,0,10"/>
             <Label Content="Language:" Margin="0,0,0,5"/>
-            <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Option.Language}" Height="40" Margin="0,0,0,10">
+            <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Option.Language}" Height="50" Margin="0,0,0,10">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
@@ -29,13 +29,7 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             <Label Content="Compiler:" Margin="0,0,0,5"/>
-            <ComboBox ItemsSource="{Binding Compilers}" SelectedItem="{Binding Option.Compiler}" Height="40" Margin="0,0,0,10">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+            <TextBox Text="{Binding Option.Compiler}" Height="50" Margin="0,0,0,10"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
                 <Button Content="Save" Command="{Binding SaveCommand}" Margin="5" Width="100"/>

@@ -37,7 +37,9 @@
                     <Button Content="Remove" Command="{Binding RemoveAccountCommand}" Margin="5"/>
                     <Button Content="Refresh" Command="{Binding RefreshAccountsCommand}" Margin="5"/>
                     <Button Content="Start" Command="{Binding StartSolvingCommand}" Margin="5"/>
-                    <Button Content="Console" Command="{Binding ConCommand}" Margin="5"/>
+                    <Button Content="Toggle Console" Command="{Binding ToggleConsoleCommand}" />
+                    <Button Content="Show compilers" Command="{Binding ShowCompilersCommand}"/>
+
                     <Label Content="Course Id"/>
                     <TextBox Text="{Binding CourseId}" Width="75"/>
                 </StackPanel>

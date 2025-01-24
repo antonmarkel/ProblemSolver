@@ -9,23 +9,19 @@ using System.Windows.Input;
 
 public class AddAccountViewModel : INotifyPropertyChanged
 {
-    public OptionModel Option { get; set; }
-
-    public ObservableCollection<BotEnum> AiBots { get; set; }
-    public ObservableCollection<ProgrammingLanguageEnum> Languages { get; set; }
-
-    private ObservableCollection<CompilerEnum> _compilers;
-
-    public ObservableCollection<CompilerEnum> Compilers
+    private OptionModel _option { get; set; }
+    public OptionModel Option
     {
-        get => _compilers;
+        get => _option;
         set
         {
-            _compilers = value;
-            OnPropertyChanged(nameof(Compilers));
+            _option = value;
+            OnPropertyChanged();
         }
     }
 
+    public ObservableCollection<BotEnum> AiBots { get; set; }
+    public ObservableCollection<ProgrammingLanguageEnum> Languages { get; set; }
     public ICommand SaveCommand { get; set; }
     public ICommand CancelCommand { get; set; }
 
@@ -33,11 +29,10 @@ public class AddAccountViewModel : INotifyPropertyChanged
     {
         AiBots = new ObservableCollection<BotEnum>(Enum.GetValues(typeof(BotEnum)).Cast<BotEnum>());
         Languages = new ObservableCollection<ProgrammingLanguageEnum>(Enum.GetValues(typeof(ProgrammingLanguageEnum)).Cast<ProgrammingLanguageEnum>());
-        Compilers = new ObservableCollection<CompilerEnum>(Enum.GetValues(typeof(CompilerEnum)).Cast<CompilerEnum>());
 
         Option = new OptionModel();
 
-        SaveCommand = new RelayCommand(_ => Save(), _ => CanSave());
+        SaveCommand = new RelayCommand(_ => Save());
         CancelCommand = new RelayCommand(_ => Cancel());
 
     }
@@ -51,13 +46,6 @@ public class AddAccountViewModel : INotifyPropertyChanged
             window.DialogResult = true;
             window.Close();
         }
-    }
-
-    private bool CanSave()
-    {
-        if (Option.AccountName == null) { return false; }
-        if (Option.Compiler == null) { return false; }
-        return true;
     }
 
     private void Cancel()

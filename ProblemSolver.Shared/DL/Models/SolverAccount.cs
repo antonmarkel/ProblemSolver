@@ -9,6 +9,6 @@ public class SolverAccount
     public required string Id { get; set; }
     public required string Password { get; set; }
     public required ProgrammingLanguageEnum Language { get; set; }
-    public required CompilerEnum Compiler { get; set; }
+    public required string Compiler { get; set; }
     public required BotEnum Bot { get; set; }
 }

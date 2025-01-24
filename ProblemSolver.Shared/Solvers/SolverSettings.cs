@@ -6,7 +6,7 @@ namespace ProblemSolver.Shared.Solvers
     {
         public required string Name { get; set; }
         public required ProgrammingLanguageEnum Language { get; set; }
-        public required CompilerEnum Compiler { get; set; }
+        public required string Compiler { get; set; }
         public required BotEnum AiBot { get; set; }
     }
 }

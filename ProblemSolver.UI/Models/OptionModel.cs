@@ -9,7 +9,7 @@ namespace ProblemSolver.UI.Models
         private string _accountName = string.Empty;
         private BotEnum _aiBot;
         private ProgrammingLanguageEnum _language;
-        private CompilerEnum _compiler;
+        private string _compiler;
 
         public string AccountName
         {
@@ -41,7 +41,7 @@ namespace ProblemSolver.UI.Models
             }
         }
 
-        public CompilerEnum Compiler 
+        public string Compiler 
         {
             get => _compiler;
             set

@@ -4,7 +4,7 @@ namespace ProblemSolver.Shared.Tasks
 {
     public class TaskSolution
     {
-        public TaskSolution(string code, ProgrammingLanguageEnum language, CompilerEnum compiler)
+        public TaskSolution(string code, ProgrammingLanguageEnum language, string compiler)
         {
             Code = code;
             Language = language;
@@ -16,6 +16,6 @@ namespace ProblemSolver.Shared.Tasks
         public long TaskId { get; set; }
         public string Code { get; }
         public ProgrammingLanguageEnum Language { get; }
-        public CompilerEnum Compiler { get; set; }
+        public string Compiler { get; set; }
     }
 }
