@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Immutable;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using ProblemSolver.Configuration.Solvers;
 using ProblemSolver.Logic.BotServices.Interfaces;
 using ProblemSolver.Logic.BotServices.Queues;
@@ -13,6 +11,8 @@ using ProblemSolver.Shared.DL.Models;
 using ProblemSolver.Shared.Solvers;
 using ProblemSolver.Shared.Tasks;
 using ProblemSolver.Shared.Tasks.Enums;
+using System.Collections.Concurrent;
+using System.Collections.Immutable;
 
 namespace ProblemSolver.Logic.SolverServices.Implementations;
 

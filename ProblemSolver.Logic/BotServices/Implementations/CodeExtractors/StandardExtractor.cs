@@ -1,5 +1,5 @@
-﻿using System.Text;
-using ProblemSolver.Logic.BotServices.Interfaces;
+﻿using ProblemSolver.Logic.BotServices.Interfaces;
+using System.Text;
 
 namespace ProblemSolver.Logic.BotServices.Implementations.CodeExtractors
 {

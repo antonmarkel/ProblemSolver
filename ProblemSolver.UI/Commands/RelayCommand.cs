@@ -1,10 +1,9 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 public class RelayCommand : ICommand
 {
     private readonly Action<object> _execute;
-    private readonly Func<object,bool> _canExecute;
+    private readonly Func<object, bool> _canExecute;
 
     public event EventHandler CanExecuteChanged
     {

@@ -1,8 +1,8 @@
-﻿using System.Text.RegularExpressions;
-using OneOf;
+﻿using OneOf;
 using ProblemSolver.Logic.DlServices.Interfaces;
 using ProblemSolver.Logic.Results;
 using ProblemSolver.Shared.Tasks;
+using System.Text.RegularExpressions;
 
 namespace ProblemSolver.Logic.DlServices.Implementations
 {
@@ -29,7 +29,7 @@ namespace ProblemSolver.Logic.DlServices.Implementations
                 long nid = long.Parse(match.Groups[1].Value);
                 long cid = long.Parse(match.Groups[2].Value);
                 urls.Add(new TaskLink
-                    { TaskId = nid, CourseId = courseId, Url = $"taskview.jsp?nid={nid}&cid={cid}&showcfg=1" });
+                { TaskId = nid, CourseId = courseId, Url = $"taskview.jsp?nid={nid}&cid={cid}&showcfg=1" });
             }
 
             if (urls.Count == 0)

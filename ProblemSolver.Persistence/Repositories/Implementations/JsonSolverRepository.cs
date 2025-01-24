@@ -1,8 +1,8 @@
-﻿using System.Text.Json;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using ProblemSolver.Configuration.Bot;
 using ProblemSolver.Persistence.Repositories.Interfaces;
 using ProblemSolver.Shared.DL.Models;
+using System.Text.Json;
 
 namespace ProblemSolver.Persistence.Repositories.Implementations
 {
@@ -34,7 +34,7 @@ namespace ProblemSolver.Persistence.Repositories.Implementations
             {
                 using (FileStream fs = File.Create(_config.FilePath))
                 {
-                   
+
                 }
 
                 File.WriteAllText(Path.Combine(_config.FilePath), "[]");

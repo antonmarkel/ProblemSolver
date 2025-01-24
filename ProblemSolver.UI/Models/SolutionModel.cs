@@ -1,6 +1,5 @@
 ﻿using ProblemSolver.Shared.Solvers;
 using ProblemSolver.Shared.Tasks.Enums;
-using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -22,8 +21,8 @@ namespace ProblemSolver.UI.Models
             }
         }
 
-        public SolutionStateEnum State 
-        { 
+        public SolutionStateEnum State
+        {
             get => _state;
             set
             {

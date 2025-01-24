@@ -1,7 +1,7 @@
-﻿using System.Net.Http.Headers;
-using ProblemSolver.Logic.DlServices.Interfaces;
+﻿using ProblemSolver.Logic.DlServices.Interfaces;
 using ProblemSolver.Logic.Helpers;
 using ProblemSolver.Shared.Tasks;
+using System.Net.Http.Headers;
 
 namespace ProblemSolver.Logic.DlServices.Implementations
 {
@@ -64,4 +64,3 @@ namespace ProblemSolver.Logic.DlServices.Implementations
         }
     }
 }
-    

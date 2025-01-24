@@ -1,9 +1,9 @@
-﻿using System.Text;
-using OneOf;
+﻿using OneOf;
 using OneOf.Types;
 using ProblemSolver.Logic.DlServices.Interfaces;
 using ProblemSolver.Logic.Results;
 using ProblemSolver.Shared.DL.Models;
+using System.Text;
 
 namespace ProblemSolver.Logic.DlServices.Implementations;
 

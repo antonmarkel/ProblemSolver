@@ -1,8 +1,8 @@
-﻿using System.Text;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using OneOf;
 using ProblemSolver.Logic.Results;
 using ProblemSolver.Shared.Tasks;
+using System.Text;
 
 namespace ProblemSolver.Logic.Helpers
 {
@@ -27,7 +27,7 @@ namespace ProblemSolver.Logic.Helpers
             string textContent = ExtractText(htmlDoc.DocumentNode);
 
             return new TaskInfo
-                { CourseId = link.CourseId, TaskId = link.TaskId, Task = textContent };
+            { CourseId = link.CourseId, TaskId = link.TaskId, Task = textContent };
         }
 
         private static async Task<OneOf<string, Failed>> ExtractHtmlContentAsync(string url, HttpClient client)

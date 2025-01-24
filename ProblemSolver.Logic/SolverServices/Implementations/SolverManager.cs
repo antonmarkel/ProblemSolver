@@ -44,13 +44,13 @@ public class SolverManager : ISolverManager
         return new Success();
     }
 
-    public async Task<OneOf<Success,Failed>> RemoveSolverAccountAsync(SolverAccount account)
+    public async Task<OneOf<Success, Failed>> RemoveSolverAccountAsync(SolverAccount account)
     {
         await _solverRepository.RemoveAccountAsync(account.Id);
         return new Success();
     }
 
-    public async Task<OneOf<Success,Failed>> UpdateSolverAccountAsync(SolverAccount account)
+    public async Task<OneOf<Success, Failed>> UpdateSolverAccountAsync(SolverAccount account)
     {
         await _solverRepository.UpdateAccountAsync(account);
         return new Success();

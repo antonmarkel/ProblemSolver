@@ -1,12 +1,12 @@
-﻿using System.Net.WebSockets;
-using System.Text;
-using System.Text.Json;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using OneOf;
 using ProblemSolver.Configuration.Bot;
 using ProblemSolver.Logic.BotServices.Interfaces;
 using ProblemSolver.Logic.Results;
 using ProblemSolver.Shared.Bot.Dtos.Requests;
+using System.Net.WebSockets;
+using System.Text;
+using System.Text.Json;
 
 namespace ProblemSolver.Logic.BotServices.Implementations
 {

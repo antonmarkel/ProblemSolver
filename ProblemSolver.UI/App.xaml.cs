@@ -1,11 +1,11 @@
-﻿using System.IO;
-using System.Windows;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProblemSolver.Configuration.Bot;
 using ProblemSolver.Configuration.Solvers;
 using ProblemSolver.UI.Extensions;
+using System.IO;
+using System.Windows;
 
 namespace ProblemSolver.UI;
 

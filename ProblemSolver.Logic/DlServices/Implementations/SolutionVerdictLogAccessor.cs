@@ -1,6 +1,6 @@
-﻿using System.Text;
+﻿using ProblemSolver.Shared.Solvers;
+using System.Text;
 using System.Text.RegularExpressions;
-using ProblemSolver.Shared.Solvers;
 
 namespace ProblemSolver.Logic.DlServices.Implementations
 {
@@ -14,50 +14,50 @@ namespace ProblemSolver.Logic.DlServices.Implementations
             var logData = new Dictionary<string, string>
             {
                 //TODO:Maybe make it according to the current date. Like extract a day from current date
-                { "fday", "26" },
-                { "fmonth", "10" },
-                { "fyear", "2024" },
-                { "tday", "26" },
-                { "tmonth", "12" },
-                { "tyear", "2024" }
+                { "fday", $"{DateTime.Now.Day}" },
+                { "fmonth", $"{DateTime.Now.Month}" },
+                { "fyear", $"{DateTime.Now.Month}" },
+                { "tday", $"{DateTime.Now.Day}" },
+                { "tmonth",  $"{DateTime.Now.Month}" },
+                { "tyear",  $"{DateTime.Now.Year}" }
             };
-                var logContent = new FormUrlEncodedContent(logData);
+            var logContent = new FormUrlEncodedContent(logData);
 
-                var logsResp = await client.PostAsync("log.asp", logContent);
-                byte[] responseBody = await logsResp.Content.ReadAsByteArrayAsync();
-                var windows1251 = Encoding.GetEncoding("windows-1251");
-                string decodedText = windows1251.GetString(responseBody);
+            var logsResp = await client.PostAsync("log.asp", logContent);
+            byte[] responseBody = await logsResp.Content.ReadAsByteArrayAsync();
+            var windows1251 = Encoding.GetEncoding("windows-1251");
+            string decodedText = windows1251.GetString(responseBody);
 
-                //the response contains a table with solution verdict, we extract all of them.
-                //TODO: it's not necessary to extract all the logs of course, only the one task we're intrested in.(I could do it myself, but I'm a f*cking lazy ass)
-                //TODO: or on the contrary make one request to check the solution for several tasks.
-                //TODO: it's the thing that does not work on every course for now.
-                var regex = new Regex(
-                    @"<td[^>]*><font[^>]*>&nbsp;&nbsp;<a href=""task\.jsp\?nid=(?<taskID>\d+)&cid=(?<courseID>\d+)"">(?<taskName>.*?)</a>&nbsp;&nbsp;</font></td>\s*
+            //the response contains a table with solution verdict, we extract all of them.
+            //TODO: it's not necessary to extract all the logs of course, only the one task we're intrested in.(I could do it myself, but I'm a f*cking lazy ass)
+            //TODO: or on the contrary make one request to check the solution for several tasks.
+            //TODO: it's the thing that does not work on every course for now.
+            var regex = new Regex(
+                @"<td[^>]*><font[^>]*>&nbsp;&nbsp;<a href=""task\.jsp\?nid=(?<taskID>\d+)&cid=(?<courseID>\d+)"">(?<taskName>.*?)</a>&nbsp;&nbsp;</font></td>\s*
 <td[^>]*><font[^>]*><a href=""log-dbt\.asp\?id=(?<logId>\d+)"">(?<result>\d+) / (?<maximum>\d+)</a>&nbsp;</font></td>\s*
 <td[^>]*><font[^>]*>(?<verdict>.*?)&nbsp;</font></td>");
 
-                var matches = regex.Matches(decodedText);
+            var matches = regex.Matches(decodedText);
 
-                foreach (Match match in matches)
-                {
-                    string id = match.Groups["taskID"].Value;
+            foreach (Match match in matches)
+            {
+                string id = match.Groups["taskID"].Value;
 
-                    if (id == taskId.ToString())
-                        return new SolutionVerdict
-                        {
-                            TaskId = taskId,
-                            CourseId = courseId,
-                            IsSolved = match.Groups["result"].Value ==
-                                       match.Groups["maximum"]
-                                           .Value, //usually if task is solver we have score like (40/40).(result/maximum)
-                            Verdict = match.Groups["verdict"].Value
-                                .Replace("&nbsp;",
-                                    "") //I have no idea what is &nbsp, I just remove it for a clearer output.
-                        };
-                }
+                if (id == taskId.ToString())
+                    return new SolutionVerdict
+                    {
+                        TaskId = taskId,
+                        CourseId = courseId,
+                        IsSolved = match.Groups["result"].Value ==
+                                   match.Groups["maximum"]
+                                       .Value, //usually if task is solver we have score like (40/40).(result/maximum)
+                        Verdict = match.Groups["verdict"].Value
+                            .Replace("&nbsp;",
+                                "") //I have no idea what is &nbsp, I just remove it for a clearer output.
+                    };
+            }
 
-                return null;
+            return null;
         }
     }
 }

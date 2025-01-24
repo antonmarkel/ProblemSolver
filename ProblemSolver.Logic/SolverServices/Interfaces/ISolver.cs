@@ -1,7 +1,7 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Immutable;
-using ProblemSolver.Shared.Tasks;
+﻿using ProblemSolver.Shared.Tasks;
 using ProblemSolver.Shared.Tasks.Enums;
+using System.Collections.Concurrent;
+using System.Collections.Immutable;
 
 namespace ProblemSolver.Logic.SolverServices.Interfaces
 {

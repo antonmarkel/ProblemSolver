@@ -1,5 +1,5 @@
-﻿using System.Net;
-using ProblemSolver.Logic.DlServices.Interfaces;
+﻿using ProblemSolver.Logic.DlServices.Interfaces;
+using System.Net;
 
 namespace ProblemSolver.Logic.DlServices.Implementations
 {

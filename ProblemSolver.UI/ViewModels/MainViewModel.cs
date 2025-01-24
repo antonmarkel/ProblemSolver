@@ -1,23 +1,23 @@
-﻿using ProblemSolver.UI.Views;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
-using ProblemSolver.Logic.SolverServices.Interfaces;
-using ProblemSolver.Logic.BotServices.Queues;
+﻿using ProblemSolver.Logic.BotServices.Queues;
 using ProblemSolver.Logic.DlServices.Interfaces;
 using ProblemSolver.Logic.SolverServices.Implementations;
+using ProblemSolver.Logic.SolverServices.Interfaces;
 using ProblemSolver.Shared.DL.Models;
 using ProblemSolver.Shared.Solvers;
-using ProblemSolver.UI.Messages;
-using System.Text;
 using ProblemSolver.Shared.Tasks;
+using ProblemSolver.Shared.Tasks.Enums;
+using ProblemSolver.UI.Messages;
+using ProblemSolver.UI.Models;
+using ProblemSolver.UI.ViewModels;
+using ProblemSolver.UI.Views;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using ProblemSolver.UI.Models;
-using System.Windows;
-using ProblemSolver.Shared.Tasks.Enums;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using ProblemSolver.UI.ViewModels;
+using System.Text;
+using System.Windows;
+using System.Windows.Input;
 
 public class MainViewModel : INotifyPropertyChanged
 {
@@ -388,7 +388,7 @@ public class MainViewModel : INotifyPropertyChanged
         }
         else
         {
-            ShowConsole();  
+            ShowConsole();
         }
     }
 }

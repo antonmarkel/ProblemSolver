@@ -6,5 +6,5 @@ namespace ProblemSolver.Logic.DlServices.Interfaces;
 
 public interface ICourseSubscriptionService
 {
-    Task<OneOf<Success,Failed>> EnsureSubscriptionToCourseAsync(long courseId, HttpClient client);
+    Task<OneOf<Success, Failed>> EnsureSubscriptionToCourseAsync(long courseId, HttpClient client);
 }

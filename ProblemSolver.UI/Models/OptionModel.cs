@@ -41,7 +41,7 @@ namespace ProblemSolver.UI.Models
             }
         }
 
-        public string Compiler 
+        public string Compiler
         {
             get => _compiler;
             set
