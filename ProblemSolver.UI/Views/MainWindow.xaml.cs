@@ -10,6 +10,7 @@ namespace ProblemSolver.UI
 {
     public partial class MainWindow : Window
     {
+        // DI for MainViewModel
         public MainWindow(ISolverManager solverManager, ITaskExtractor taskExtractor, ILoginService loginService,
             ISolverFactory<StandardSolver> solverFactory, IDlClientFactory clientFactory,
             ICourseSubscriptionService courseSubscriptionService, SolutionQueue queue, MessageHelper messageHelper)

@@ -4,6 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace ProblemSolver.UI.Models
 {
+    // Simple model which provides INotifyPropertyChanged,
+    // Used in AddAccountView, with this model we are creating a new
+    // solver account
     public class OptionModel : INotifyPropertyChanged
     {
         private string _accountName = string.Empty;

@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace ProblemSolver.UI.Models
 {
+    // Simple model which provides INotifyPropertyChanged,
+    // After you click on "Start" button, all of your accounts are
+    // starting to log in, then for every account creating it's own solver, and we
+    // are creating for every solver solution model
     public class SolutionModel : INotifyPropertyChanged
     {
         private string _accountName;

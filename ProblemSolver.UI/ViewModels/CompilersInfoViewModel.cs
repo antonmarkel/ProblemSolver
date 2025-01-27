@@ -1,5 +1,9 @@
 ﻿namespace ProblemSolver.UI.ViewModels
 {
+    // Now it's hardcode, but you can change it, because for every course
+    // there are different compilers, so it could doesn't work
+    // This viewmodel provides information for user about all compilers
+    // dl.gsu.by has
     public class CompilersInfoViewModel
     {
         public Dictionary<string, string> Compilers { get; set; }

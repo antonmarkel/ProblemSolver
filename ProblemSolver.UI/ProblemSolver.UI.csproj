@@ -6,6 +6,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	<InterceptorsPreviewNamespaces>$(InterceptorsPreviewNamespaces);Microsoft.Extensions.Configuration.Binder.SourceGeneration</InterceptorsPreviewNamespaces>
+
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,11 +26,11 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ProblemSolver.Configuration\ProblemSolver.Configuration.csproj" />
     <ProjectReference Include="..\ProblemSolver.Logic\ProblemSolver.Logic.csproj" />
   </ItemGroup>
-
 </Project>

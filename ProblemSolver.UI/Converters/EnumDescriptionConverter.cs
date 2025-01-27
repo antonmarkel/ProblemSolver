@@ -4,13 +4,17 @@ using System.Reflection;
 using System.Windows.Data;
 
 namespace ProblemSolver.UI.Converters;
+
+// Default value converter for WPF, I used it when you need to show instances of enum,
+// especially I added for every instance of enum attribute - Description, so this converter shows
+// only this attribute 
 public class EnumDescriptionConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value == null)
         {
-            return string.Empty; // Вернем пустую строку, если значение null
+            return string.Empty;
         }
 
         if (value is Enum enumValue)
@@ -25,7 +29,7 @@ public class EnumDescriptionConverter : IValueConverter
     {
         if (value == null)
         {
-            return null; // Вернем null, если значение null
+            return null;
         }
 
         var enumType = targetType;

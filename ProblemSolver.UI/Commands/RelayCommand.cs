@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-public class RelayCommand : ICommand
+public class RelayCommand : ICommand // Default Command class for WPF
 {
     private readonly Action<object> _execute;
     private readonly Func<object, bool> _canExecute;

@@ -14,6 +14,7 @@ using ProblemSolver.UI.Messages;
 
 namespace ProblemSolver.UI.Extensions;
 
+// Default DI of all backend services and frontend MessageHelper
 public static class ApplicationExtensions
 {
     public static IServiceCollection AddBotServices(this IServiceCollection services)

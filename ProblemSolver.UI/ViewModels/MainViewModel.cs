@@ -19,6 +19,11 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 
+
+// A realy big class, I wanted to divise class by using partial,
+// but I'm too lazy. For example you could divise all booleans, collections
+// variables, commands and services. So in final you will have 5 namespaces.
+// In general this class is responsible for all operations with accounts.
 public class MainViewModel : INotifyPropertyChanged
 {
     private readonly ISolverManager _solverManager;
@@ -169,9 +174,15 @@ public class MainViewModel : INotifyPropertyChanged
         // Because console toggles automaticly, so we need to turn it off
         HideConsole();
 
+        // solver.SolveAsync return to us ConcurrentDictionary, but we can't handle it in our UI,
+        // I mean if something changed in this dictionary, UI won't show us what changed,
+        // so we use timer and every 2 seconds after start, we get Dictionary with tasks and their states
         _updateTimer = new Timer(UpdateSolutions, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
     }
 
+    // Maybe useless function, but you can leave it.
+    // In all test stages, all add and remove commands work clearly,
+    // so I have never use this function
     public async Task RefreshAccounts()
     {
         CanRefreshAccounts = false;
@@ -276,6 +287,9 @@ public class MainViewModel : INotifyPropertyChanged
 
         Console.WriteLine("STARTING...");
         Solvers = new List<StandardSolver>(Accounts.Count);
+
+        // Adding solver for every account
+
         foreach (var account in Accounts)
         {
             var solver = _solverFactory.CreateSolver(account);
@@ -300,9 +314,13 @@ public class MainViewModel : INotifyPropertyChanged
             }
         }
 
+        // Extracting all tasks from course, why we use Solvers[0]? Because every solver has the same HttpClient,
+        // Idk clearly, but you can watch out this moment on backend
+
         var tasksResult = await _taskExtractor.ExtractTasksAsync(CourseId.Value, Solvers[0].HttpClient);
         var tasks = tasksResult.AsT0;
 
+        // Creating solution model for every solver
         foreach (var solver in Solvers)
         {
             var copiedTasks = new List<TaskInfo?>(tasks.Count);
@@ -317,11 +335,13 @@ public class MainViewModel : INotifyPropertyChanged
 
             Solutions.Add(solution);
         }
+        // Starting solving
         _queue.Start();
 
         IsStartSolvingMethodCompleted = true;
     }
 
+    // Updating solution every N seconds, because of timer
     private async void UpdateSolutions(object state)
     {
         foreach (var solution in Solutions)
